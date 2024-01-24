@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Hidden Folders
+.cache
+.cmake
+
+# Build Folder
+build
+
+# Personal notes
+notes.txt

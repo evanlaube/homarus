@@ -11,11 +11,12 @@ class Polygon : public Shape {
     public:
         Polygon(std::vector<Vec2d> vertices);
  
+        std::vector<Vec2d> vertices;
+
         void calcArea() override;
         void calcCentroid() override;
 
     protected:
-        std::vector<Vec2d> vertices;
 
 
 };

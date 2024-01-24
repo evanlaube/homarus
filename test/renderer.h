@@ -4,6 +4,9 @@
 
 #include "physics/world.h"
 #include "GL/glew.h"
+#include "shapes/circle.h"
+#include "shapes/polygon.h"
+#include "shapes/shape.h"
 #include <GLFW/glfw3.h>
 
 class Renderer {
@@ -22,6 +25,9 @@ class Renderer {
         void draw();
         void update();
         void exit();
+
+        void drawShape(Circle c, float x, float y, float a);
+        void drawShape(Polygon p, float x, float y, float a);
 
         void drawCircle(float x, float y, float r);
         void drawCircle(float x, float y, float r, int triCount);

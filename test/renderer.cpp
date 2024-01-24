@@ -1,5 +1,6 @@
 
 #include "renderer.h"
+#include "util/vec2.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
@@ -77,6 +78,22 @@ void Renderer::drawCircle(float x, float y, float r, int triCount) {
 
     glEnd();
 }
+
+void Renderer::drawShape(Circle c, float x, float y, float a) {
+   drawCircle(x, y, c.getRadius()); 
+}
+
+void Renderer::drawShape(Polygon p, float x, float y, float a) {
+    
+    glBegin(GL_POLYGON);
+    for(int i = 0; i < p.vertices.size(); i++) {
+        Vec2d vert = p.vertices[i];
+        glVertex2f(x + vert.x, y + vert.y);
+    }
+
+    glEnd();
+}
+
 
 void Renderer::drawBodies() {
     for(Body b : world->bodies) {

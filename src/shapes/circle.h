@@ -10,6 +10,7 @@ class Circle : public Shape {
 
         void calcArea() override;
 
+        float getRadius() { return r; }
     private:
         float r;
 

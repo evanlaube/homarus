@@ -14,7 +14,7 @@
 #include <vector>
 
 int main() {
-/*    World world;
+    World world;
 
     Fixture f;
 
@@ -25,17 +25,11 @@ int main() {
     Renderer renderer = Renderer(&world);
 
     renderer.init();
-    
-    while(renderer.close == false) {
-        renderer.draw();
-        renderer.update();
-    }
-*/
 
     // Simple test of Shape::calcArea and Shape::calcCentroid using a square
-    Vec2d tl(0, 2);
-    Vec2d tr(2, 2);
-    Vec2d br(2, 0);
+    Vec2d tl(0, 40);
+    Vec2d tr(40, 40);
+    Vec2d br(40, 0);
     Vec2d bl(0, 0);
 
     std::vector<Vec2d> verts;
@@ -45,6 +39,12 @@ int main() {
     verts.push_back(bl);
 
     Polygon p(verts);
+    
+    while(renderer.close == false) {
+        renderer.draw();
+        renderer.drawShape(p, 50, 50, 0);
+        renderer.update();
+    }
 
     return 0;
 }

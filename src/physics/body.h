@@ -13,10 +13,14 @@ class Body {
         Vec2d vel;
         Vec2d acc;
 
-        Fixture fixture;
+
+        void setFixture(Fixture f);
+        Shape* getShape() { return fixture.getShape(); }
 
         Body(Vec2d pos, double ang, Fixture fixture);
         bool isColliding(Body b);
+    private:
+        Fixture fixture;
 };
 
 #endif // !BODY_H

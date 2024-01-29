@@ -17,7 +17,8 @@ class Polygon : public Shape {
         void calcCentroid() override;
 
     protected:
-
+        void orderVertices();
+        static bool ccwCompare(Vec2d a, Vec2d b);
 
 };
 

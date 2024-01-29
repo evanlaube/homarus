@@ -15,7 +15,6 @@ class Shape {
         Vec2d centroid;
         float area;
         
-        virtual void calcProperties();
         virtual void calcCentroid();
         virtual void calcArea();
 

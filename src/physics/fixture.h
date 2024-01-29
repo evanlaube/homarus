@@ -7,13 +7,13 @@
 class Fixture {
 
     public:
-        Shape shape;
+        Shape *shape;
         float mass;
         // TODO: make this private by some method
         bool attached = false;
 
-        void setShape(Shape s);
-        Shape* getShape() { return &shape; }
+        void setShape(Shape *s);
+        Shape* getShape() { return shape; }
     private:
 
 };

@@ -38,6 +38,13 @@ struct Vec2d {
         return x*b.x + y*b.y;
     }
 
+    // Returns the z component of the cross product
+    //  - For 2D vectors, the x and y component is 0 when taking
+    //    a cross product
+    double crossZ(Vec2d b) {
+        return (x * b.y) - (y * b.x);
+    }
+
     void increase(Vec2d b) {
         x += b.x;
         y += b.y;

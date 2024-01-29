@@ -79,16 +79,24 @@ void Renderer::drawCircle(float x, float y, float r, int triCount) {
     glEnd();
 }
 
+void Renderer::drawShape(Shape s, float x, float y, float a) {
+    std::cout << "ERROR: Unknown shape passed into Renderer::drawShape()" << std::endl;
+    // TODO: Check what type of shape is passed and draw it
+}
+
 void Renderer::drawShape(Circle c, float x, float y, float a) {
    drawCircle(x, y, c.getRadius()); 
 }
 
 void Renderer::drawShape(Polygon p, float x, float y, float a) {
     
+    float cx = p.centroid.x;
+    float cy = p.centroid.y;
+
     glBegin(GL_POLYGON);
     for(int i = 0; i < p.vertices.size(); i++) {
         Vec2d vert = p.vertices[i];
-        glVertex2f(x + vert.x, y + vert.y);
+        glVertex2f(x - cx + vert.x, y - cy + vert.y);
     }
 
     glEnd();

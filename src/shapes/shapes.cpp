@@ -32,6 +32,14 @@ void Circle::calcArea() {
 }
 
 void Polygon::orderVertices() {
+
+    // Subtract first vertex from all verticies to make first vertex (0,0)
+    Vec2d first = vertices[0];
+    first.mult(-1);
+    for(int i = 0; i < vertices.size(); i++) {
+        vertices[i].increase(first);
+    }
+
     std::sort(vertices.begin(), vertices.end(), ccwCompare);
 }
 

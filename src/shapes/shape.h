@@ -12,6 +12,8 @@ class Shape {
         Shape();
         //virtual ~Shape();
 
+        const static short type = 0;
+
         Vec2d centroid;
         float area;
         

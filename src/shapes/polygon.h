@@ -10,7 +10,9 @@ class Polygon : public Shape {
 
     public:
         Polygon(std::vector<Vec2d> vertices);
- 
+
+        const static short type = 2;
+            
         std::vector<Vec2d> vertices;
 
         void calcArea() override;

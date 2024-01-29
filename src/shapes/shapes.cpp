@@ -3,18 +3,13 @@
 #include "circle.h"
 #include "polygon.h"
 #include "../util/vec2.h"
-#include <cstdlib>
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
 
 Shape::Shape() {
 
-}
-
-void Shape::calcProperties() {
-    calcArea();
-    calcCentroid();
 }
 
 void Shape::calcArea() {
@@ -28,19 +23,41 @@ void Shape::calcCentroid() {
 Circle::Circle(float radius) {
    this->r = radius; 
 
-   calcProperties();
+    calcCentroid();
+    calcArea();
 }
 
 void Circle::calcArea() {
     area = 3.14 * r * r;
 }
 
+void Polygon::orderVertices() {
+    std::sort(vertices.begin(), vertices.end(), ccwCompare);
+}
+
+bool Polygon::ccwCompare(Vec2d a, Vec2d b) {
+    double cross = a.crossZ(b);
+
+    if(cross == 0) {
+       // TODO: Make vertex closer to center come first in verticies vector
+       //       when cross product is zero. Have to get around being unable 
+       //       to access centroid vector from static context
+       //
+       //       For now only allow convex polygons, or at least no concave
+       //       polygons with 90 degree angles on the inside
+       return false;
+    }
+
+    return cross > 0;
+}
 
 Polygon::Polygon(std::vector<Vec2d> vertices) {
-    // TODO: Order verticies in counter clockwise order rather than expecting user to
     this->vertices = vertices;
 
-    calcProperties();
+    orderVertices();
+
+    calcArea();
+    calcCentroid();
 
     std::cout << "Area: " << area << std::endl;
     std::cout << "Centroid: (" << centroid.x << ", " << centroid.y << ")" << std::endl;
@@ -48,7 +65,6 @@ Polygon::Polygon(std::vector<Vec2d> vertices) {
 
 void Polygon::calcArea() {
     float a = 0;
-
 
     for(int i = 0; i < vertices.size(); i++) {
         Vec2d vert = vertices[i];
@@ -62,10 +78,9 @@ void Polygon::calcArea() {
 
     a /= 2;
 
-    // NOTE: Area can be negative, this is due to the possibility that the 
-    //       points are ordered in clockwise order
     area = a;
 }
+
 
 void Polygon::calcCentroid() {
     if(!area) calcArea();

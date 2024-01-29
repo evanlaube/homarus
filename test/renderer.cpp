@@ -1,5 +1,7 @@
 
+#include "homarus.h"
 #include "renderer.h"
+#include "shapes/polygon.h"
 #include "util/vec2.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -79,29 +81,38 @@ void Renderer::drawCircle(float x, float y, float r, int triCount) {
     glEnd();
 }
 
-void Renderer::drawShape(Shape s, float x, float y, float a) {
-    std::cout << "ERROR: Unknown shape passed into Renderer::drawShape()" << std::endl;
+void Renderer::drawShape(Shape *s, float x, float y, float a) {
+    //std::cout << "ERROR: Unknown shape passed into Renderer::drawShape()" << std::endl;
     // TODO: Check what type of shape is passed and draw it
+
+    if(s->getType() == TYPE_CIRCLE) {
+        Circle *c = dynamic_cast<Circle*>(s);
+        drawCircle(x, y, c->getRadius(), 32);
+    } else if(s->getType() == TYPE_POLYGON) {
+        Polygon *p = dynamic_cast<Polygon*>(s);
+        drawShape(p, x, y, a);
+    }
+
 }
 
-void Renderer::drawShape(Circle c, float x, float y, float a) {
-   drawCircle(x, y, c.getRadius()); 
+void Renderer::drawShape(Circle *c, float x, float y, float a) {
+    drawCircle(x, y, c->getRadius(), 32);
 }
 
-void Renderer::drawShape(Polygon p, float x, float y, float a) {
+
+void Renderer::drawShape(Polygon *p, float x, float y, float a) {
     
-    float cx = p.centroid.x;
-    float cy = p.centroid.y;
+    float cx = p->centroid.x;
+    float cy = p->centroid.y;
 
     glBegin(GL_POLYGON);
-    for(int i = 0; i < p.vertices.size(); i++) {
-        Vec2d vert = p.vertices[i];
+    for(int i = 0; i < p->vertices.size(); i++) {
+        Vec2d vert = p->vertices[i];
         glVertex2f(x - cx + vert.x, y - cy + vert.y);
     }
 
     glEnd();
 }
-
 
 void Renderer::drawBodies() {
     for(Body b : world->bodies) {
@@ -111,5 +122,9 @@ void Renderer::drawBodies() {
 
 void Renderer::drawBody(Body b) {
     glColor3f(1, 0, 0);
-    drawCircle(b.pos.x, b.pos.y, 32);
+
+    Shape* s = b.getShape();
+
+    drawShape(s, b.pos.x, b.pos.y, b.ang);
 }
+

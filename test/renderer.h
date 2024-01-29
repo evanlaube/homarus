@@ -26,9 +26,9 @@ class Renderer {
         void update();
         void exit();
 
-        void drawShape(Shape s, float x, float y, float a);
-        void drawShape(Circle c, float x, float y, float a);
-        void drawShape(Polygon p, float x, float y, float a);
+        void drawShape(Shape *s, float x, float y, float a);
+        void drawShape(Circle *c, float x, float y, float a);
+        void drawShape(Polygon *p, float x, float y, float a);
 
         void drawCircle(float x, float y, float r);
         void drawCircle(float x, float y, float r, int triCount);

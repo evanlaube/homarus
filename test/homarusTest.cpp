@@ -1,8 +1,8 @@
-
 #include <iostream>
 
 #include "homarus.h"
 
+#include "physics/fixture.h"
 #include "renderer.h"
 #include "shapes/shape.h"
 #include "shapes/circle.h"
@@ -15,34 +15,26 @@
 
 int main() {
     World world;
-
-    Fixture f;
-
-    Body b = Body(Vec2d(100, 100), 0, f);
     
-    world.addBody(b);
-
     Renderer renderer = Renderer(&world);
 
     renderer.init();
 
     // Simple test of Shape::calcArea and Shape::calcCentroid using a square
-    Vec2d tl(0, 40);
-    Vec2d tr(40, 40);
-    Vec2d br(40, 0);
-    Vec2d bl(0, 0);
-
     std::vector<Vec2d> verts;
-    verts.push_back(tl);
-    verts.push_back(tr);
-    verts.push_back(br);
-    verts.push_back(bl);
-
-    Polygon p(verts);
+    verts.push_back(Vec2d(50, 50));
+    verts.push_back(Vec2d(150, 50));
+    verts.push_back(Vec2d(100, 150));
     
+    Polygon *p = new Polygon(verts);
+    Fixture f;
+    f.setShape(p);
+
+    Body body(Vec2d(200, 100), 0, f);
+    world.addBody(body);
+
     while(renderer.close == false) {
         renderer.draw();
-        renderer.drawShape(p, 50, 50, 0);
         renderer.update();
     }
 

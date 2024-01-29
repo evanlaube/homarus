@@ -50,6 +50,11 @@ struct Vec2d {
         y += b.y;
     }
 
+    void mult(float s) {
+        x *= s;
+        y *= s;
+    }
+
     void erase() {
         x = 0;
         y = 0;

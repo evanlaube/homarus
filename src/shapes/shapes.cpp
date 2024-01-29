@@ -21,7 +21,7 @@ void Shape::calcCentroid() {
 }
 
 Circle::Circle(float radius) {
-   this->r = radius; 
+    this->r = radius; 
 
     calcCentroid();
     calcArea();

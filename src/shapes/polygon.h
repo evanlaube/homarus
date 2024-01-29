@@ -2,6 +2,7 @@
 #ifndef POLYGON_H
 #define POLYGON_H
 
+#include "../homarus.h"
 #include "shape.h"
 #include "../util/vec2.h"
 #include <vector>
@@ -11,7 +12,9 @@ class Polygon : public Shape {
     public:
         Polygon(std::vector<Vec2d> vertices);
 
-        const static short type = 2;
+        short getType() override {
+            return TYPE_POLYGON;
+        }
             
         std::vector<Vec2d> vertices;
 

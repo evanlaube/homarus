@@ -11,12 +11,16 @@ class Polygon : public Shape {
 
     public:
         Polygon(std::vector<Vec2d> vertices);
+        Shape* clone() const override;
 
-        short getType() override {
+        short getType() const override {
             return TYPE_POLYGON;
         }
             
         std::vector<Vec2d> vertices;
+
+        bool pointInside(Vec2d point) const override;
+        bool checkOverlap(Shape *s) const override;
 
         void calcArea() override;
         void calcCentroid() override;

@@ -12,6 +12,10 @@ Shape::Shape() {
 
 }
 
+void Shape::attach(Fixture* f) {
+    fixture = f;
+}
+
 void Shape::calcArea() {
     return;
 }
@@ -31,8 +35,21 @@ void Circle::calcArea() {
     area = 3.14 * r * r;
 }
 
-void Polygon::orderVertices() {
+void Circle::calcCentroid() {
+    centroid = Vec2d(0,0);
+}
 
+bool Circle::pointInside(Vec2d point) {
+    // For now just return false
+    return false;
+}
+
+bool Circle::checkOverlap(Shape *s) {
+    // For now just return false
+    return false;
+}
+
+void Polygon::orderVertices() {
     // Subtract first vertex from all verticies to make first vertex (0,0)
     Vec2d first = vertices[0];
     first.mult(-1);
@@ -81,7 +98,6 @@ void Polygon::calcArea() {
         a += (vert.x * next.y) - (next.x * vert.y);
 
         std::cout << vert << " -> " << next << std::endl;
-
     }
 
     a /= 2;
@@ -105,11 +121,20 @@ void Polygon::calcCentroid() {
 
         cx += (vert.x + next.x) * (vert.x * next.y - next.x * vert.y);
         cy += (vert.y + next.y) * (vert.x * next.y - next.x * vert.y);
-
     }
 
     cx /= (6*area);
     cy /= (6*area);
 
     centroid = Vec2d(cx, cy);
+}
+
+bool Polygon::pointInside(Vec2d point) {
+    // For now just return false
+    return false;
+}
+
+bool Polygon::checkOverlap(Shape *s) {
+    // For now just return false
+    return false;
 }

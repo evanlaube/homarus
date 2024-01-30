@@ -1,7 +1,11 @@
 
 #include "fixture.h"
+#include "../shapes/shape.h"
 
+Fixture::Fixture() {
+    shape = nullptr;
+}
 
-void Fixture::setShape(Shape *s) {
+Fixture::Fixture(Shape* s) {
     shape = s;
-} 
+}

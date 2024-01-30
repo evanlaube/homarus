@@ -3,10 +3,14 @@
 #ifndef FIXTURE_H
 #define FIXTURE_H
 
-#include "../shapes/shape.h"
+class Shape;
+
 class Fixture {
 
     public:
+        Fixture();
+        Fixture(Shape *shape);
+
         Shape *shape;
         float mass;
         // TODO: make this private by some method

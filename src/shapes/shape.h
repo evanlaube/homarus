@@ -12,7 +12,6 @@ class Shape {
     public:
 
         Shape();
-        //virtual ~Shape();
         virtual Shape* clone() const = 0;
 
         virtual short getType() const = 0;

@@ -11,7 +11,9 @@ class Polygon : public Shape {
 
     public:
         Polygon(std::vector<Vec2d> vertices);
-        Shape* clone() const override;
+        Polygon* clone() const override {
+            return new Polygon(*this);
+        }
 
         short getType() const override {
             return TYPE_POLYGON;

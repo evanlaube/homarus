@@ -9,7 +9,9 @@ class Circle : public Shape {
 
     public:
         Circle(float radius);
-        Shape* clone() const override;
+        Circle* clone() const override {
+            return new Circle(*this);
+        }
 
         short getType() const override {
             return TYPE_CIRCLE;

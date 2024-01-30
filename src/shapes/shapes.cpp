@@ -39,12 +39,12 @@ void Circle::calcCentroid() {
     centroid = Vec2d(0,0);
 }
 
-bool Circle::pointInside(Vec2d point) {
+bool Circle::pointInside(Vec2d point) const {
     // For now just return false
     return false;
 }
 
-bool Circle::checkOverlap(Shape *s) {
+bool Circle::checkOverlap(Shape *s) const {
     // For now just return false
     return false;
 }
@@ -129,12 +129,12 @@ void Polygon::calcCentroid() {
     centroid = Vec2d(cx, cy);
 }
 
-bool Polygon::pointInside(Vec2d point) {
+bool Polygon::pointInside(Vec2d point) const {
     // For now just return false
     return false;
 }
 
-bool Polygon::checkOverlap(Shape *s) {
+bool Polygon::checkOverlap(Shape *s) const {
     // For now just return false
     return false;
 }

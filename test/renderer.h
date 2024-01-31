@@ -8,6 +8,7 @@
 #include "shapes/polygon.h"
 #include "shapes/shape.h"
 #include <GLFW/glfw3.h>
+#include <cstdint>
 
 class Renderer {
 
@@ -26,6 +27,8 @@ class Renderer {
         void update();
         void exit();
 
+        void displayFps();
+
         void drawShape(Shape *s, float x, float y, float a);
         void drawShape(Circle *c, float x, float y, float a);
         void drawShape(Polygon *p, float x, float y, float a);
@@ -34,8 +37,11 @@ class Renderer {
         void drawCircle(float x, float y, float r, int triCount);
        
         void drawBodies();
-        void drawBody(Body b);
+        void drawBody(Body *b);
     private:
+        int fps = 0;
+        double prevTime = 0;
+        uint32_t frameCount = 0;
 
 }; 
 

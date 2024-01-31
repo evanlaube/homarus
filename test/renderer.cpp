@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
+#include <sstream>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
@@ -53,12 +54,23 @@ void Renderer::update() {
     glfwPollEvents();
 
     close = glfwWindowShouldClose(window);
+    displayFps();
 }
 
 void Renderer::draw() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     drawBodies();
+    
+    // Display FPS at end of draw loop
+    const short fpsUpdateRate = 120;
+
+    frameCount++;
+    if(frameCount % fpsUpdateRate == 0) {
+        double currentTime = glfwGetTime();
+        fps = fpsUpdateRate / (currentTime - prevTime);
+        prevTime = currentTime;
+    }
 }
 
 
@@ -115,16 +127,29 @@ void Renderer::drawShape(Polygon *p, float x, float y, float a) {
 }
 
 void Renderer::drawBodies() {
-    for(Body b : world->bodies) {
+    Body* b = world->bodyLink;
+
+    if(b == nullptr)
+        return;
+
+    do {
         drawBody(b);
-    }
+        b = b->getNext();
+    } while(b != nullptr);
 }
 
-void Renderer::drawBody(Body b) {
+void Renderer::drawBody(Body *b) {
     glColor3f(1, 0, 0);
 
-    Shape* s = b.getShape();
+    Shape* s = b->getShape();
 
-    drawShape(s, b.pos.x, b.pos.y, b.ang);
+    drawShape(s, b->pos.x, b->pos.y, b->ang);
 }
 
+void Renderer::displayFps() {
+
+    std::stringstream ss;
+    ss << "Homarus Test - FPS: " << fps;
+    glfwSetWindowTitle(window, ss.str().c_str());
+
+}

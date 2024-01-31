@@ -68,9 +68,8 @@ void* BlockAllocator::allocate(int size) {
     // TODO: Expand memoty if chunks have filled up
 
     if(c->blockCount == 0) {
-        std::cout << "Making new block" << std::endl;
         // Allocate new chunk
-        c->blocks = new Block[chunkBlockCount];
+        c->blocks = (Block*) malloc(chunkSize);
         for(int i = 0; i < chunkBlockCount-1; i++) {
             Block* b = (Block*) ((int8_t*)c->blocks + blockSize * i);
             Block* next = (Block*) ((int8_t*)c->blocks + blockSize * (i+1));

@@ -8,21 +8,28 @@
 class Body {
 
     public:
+        Body();
+        Body(Fixture *fixture);
+
+        Body* getNext() { return next; }
+        Body* getLast() { return last; }
+
         Vec2d pos;
         double ang;
         Vec2d vel;
         Vec2d acc;
 
-
-        void setFixture(Fixture f);
+        void setFixture(Fixture *f);
         void setPos(Vec2d p);
         Shape* getShape() { return fixture.getShape(); }
 
-        Body();
-        Body(Vec2d pos, double ang, Fixture fixture);
         bool isColliding(Body b);
     private:
+        friend class World;
+
         Fixture fixture;
+        Body* next;
+        Body* last;
 };
 
 #endif // !BODY_H

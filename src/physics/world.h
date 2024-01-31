@@ -3,18 +3,21 @@
 #define WORLD_H
 
 #include "body.h"
-#include <vector>
+#include "../util/blockallocator.h"
 
 class World {
     public:
         World();
+    
+        BlockAllocator allocator;
 
-        std::vector<Body> bodies;
+        Body* bodyLink = nullptr;
+        int bodyCount = 0;
 
         void update(float timestep);
         void updateBodies(float timestep);
 
-        void addBody(Body b);
+        Body* createBody(Fixture *f);
 };
 
 #endif // !WORLD_H

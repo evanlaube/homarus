@@ -1,22 +1,36 @@
 
 #include "world.h"
 #include "body.h"
-#include <vector>
+#include "../util/blockallocator.h"
+#include <iostream>
 
 
 World::World() {
-    bodies = std::vector<Body>();
 }
 
 void World::update(float timestep) {
-    for(Body b : bodies) {
-        b.pos.increase(b.vel);
-        b.vel.increase(b.acc);
 
-        b.acc.erase();
+    Body* b = bodyLink;
+
+    while(b->next != nullptr) {
+        b->pos.increase(b->vel);
+        b->vel.increase(b->acc);
+        b->acc.erase();
+        b = b->next;
     }
 }
 
-void World::addBody(Body b) {
-    bodies.push_back(b);
+Body* World::createBody(Fixture *f) {
+   void* mem = allocator.allocate(sizeof(Body));
+   Body* b = new Body(f);
+    std::cout << mem << std::endl;
+
+
+   b->next = bodyLink;
+   if(b->next) {
+       b->next->last = b;
+   }
+   bodyLink = b;
+   bodyCount++;
+   return b;
 }

@@ -15,6 +15,7 @@ class Body {
 
 
         void setFixture(Fixture f);
+        void setPos(Vec2d p);
         Shape* getShape() { return fixture.getShape(); }
 
         Body();

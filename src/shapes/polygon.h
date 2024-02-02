@@ -19,7 +19,8 @@ class Polygon : public Shape {
             return TYPE_POLYGON;
         }
             
-        std::vector<Vec2d> vertices;
+        std::vector<Vec2d> getVertices() { return vertices; }
+        std::vector<Vec2d> rotateVertices(float angle);
 
         bool pointInside(Vec2d point) const override;
         bool checkOverlap(Shape *s) const override;
@@ -28,6 +29,7 @@ class Polygon : public Shape {
         void calcCentroid() override;
 
     protected:
+        std::vector<Vec2d> vertices;
         void orderVertices();
         static bool ccwCompare(Vec2d a, Vec2d b);
 

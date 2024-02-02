@@ -4,6 +4,7 @@
 #include "polygon.h"
 #include "../util/vec2.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <vector>
 
@@ -137,4 +138,26 @@ bool Polygon::pointInside(Vec2d point) const {
 bool Polygon::checkOverlap(Shape *s) const {
     // For now just return false
     return false;
+}
+
+std::vector<Vec2d> Polygon::rotateVertices(float theta) {
+
+    std::vector<Vec2d> rotated;
+    
+    double cosTheta = cos(theta);
+    double sinTheta = sin(theta);
+
+    for(int i = 0; i < vertices.size(); i++) {
+        Vec2d v = vertices[i];
+
+        float x = v.x - centroid.x;
+        float y = v.y - centroid.y;
+
+        float rx = cosTheta * x + sinTheta * y;
+        float ry = -sinTheta * x + cosTheta * y;
+
+        rotated.push_back(Vec2d(rx + centroid.x, ry+centroid.y));
+    }
+
+    return rotated;
 }

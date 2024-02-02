@@ -15,12 +15,13 @@ class Body {
         Body* getLast() { return last; }
 
         Vec2d pos;
-        double ang;
+        double ang; // Angle stored in radians
         Vec2d vel;
         Vec2d acc;
 
         void setFixture(Fixture *f);
         void setPos(Vec2d p);
+        void rotate(float angle);
         Shape* getShape() { return fixture.getShape(); }
 
         bool isColliding(Body b);

@@ -35,3 +35,7 @@ void Body::setPos(Vec2d p) {
     pos.x = p.x;
     pos.y = p.y;
 }
+
+void Body::rotate(float angle) {
+    this->ang += angle;
+}

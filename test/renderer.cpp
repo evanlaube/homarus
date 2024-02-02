@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <sstream>
+#include <vector>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
@@ -118,8 +119,15 @@ void Renderer::drawShape(Polygon *p, float x, float y, float a) {
     float cy = p->centroid.y;
 
     glBegin(GL_POLYGON);
-    for(int i = 0; i < p->vertices.size(); i++) {
-        Vec2d vert = p->vertices[i];
+
+    std::vector<Vec2d> verts = p->rotateVertices(a);
+    //std::cout << "Verts: " << std::endl;
+    //for(int i = 0; i < verts.size(); i++) {
+    //    std::cout << "\t" << verts[i] << " vs. " << p->getVertices()[i] << std::endl;
+    //}
+
+    for(int i = 0; i < verts.size(); i++) {
+        Vec2d vert = verts[i];
         glVertex2f(x - cx + vert.x, y - cy + vert.y);
     }
 

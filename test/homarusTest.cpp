@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 
 #include "homarus.h"
@@ -35,26 +36,23 @@ int main() {
     //      3. Create a fixture and attach the shape
     //      4. Attach fixture to body
     //      5. Set a position and angle to the body
-
     
     Polygon p(verts);
     Fixture* f = new Fixture(&p);
     Body* b1 = world.createBody(f);
     float x = 100;
     b1->setPos(Vec2d(x, 100));
+    std::cout << "BodyLink: " << world.bodyLink << std::endl;
 
     Polygon p2(verts);
     Fixture* f2 = new Fixture(&p2);
     Body* b2 = world.createBody(f2);
     b2->setPos(Vec2d(x, 400));
-    
-
-    std::cout << "World bodyLink: " << world.bodyLink << std::endl;
+    b2->rotate(M_PI/2);
+    std::cout << "BodyLink: " << world.bodyLink << std::endl;
     
     while(renderer.close == false) {
-        x++;
-        b1->setPos(Vec2d(x, 100));
-        b2->setPos(Vec2d(x+200, 400));
+        b2->rotate(M_PI/1200);
         renderer.draw();
         renderer.update();
     }

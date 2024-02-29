@@ -4,8 +4,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
-#include <stddef.h>
-
 
 struct Block {
     Block* next;
@@ -42,11 +40,7 @@ BlockAllocator::~BlockAllocator() {
             continue;
        
         // TODO: Free all the blocks
-        //while(b->next != nullptr) {
-        //    b = b->next;
-        //    if(b->prev != nullptr) 
-        //        ::free(b->prev);
-       // }
+        
         // TODO: Why does it only compile with ::free vs free
         ::free(chunks);
     }
@@ -84,5 +78,4 @@ void* BlockAllocator::allocate(int size) {
     c->blockCount++;
     b->next = nullptr; // Is this necessary?
     return b;
-
 }

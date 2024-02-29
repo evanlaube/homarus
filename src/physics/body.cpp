@@ -37,5 +37,6 @@ void Body::setPos(Vec2d p) {
 }
 
 void Body::rotate(float angle) {
+    fixture.shape->rotate(angle);
     this->ang += angle;
 }

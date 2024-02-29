@@ -13,13 +13,15 @@ class Fixture {
         Fixture(Shape shape);
         Fixture(Shape *shape);
 
-        Shape *shape;
         float mass;
 
         bool attach(Body* b);
 
         void setShape(Shape *s);
         Shape* getShape() { return shape; }
+        Body* getBody() { return body; }
+        Shape* shape;
+
     private:
         Body* body;
         bool attached = false;

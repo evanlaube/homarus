@@ -4,20 +4,23 @@
 
 #include "../util/vec2.h"
 #include "fixture.h"
+#include <memory>
 
 class Body {
 
     public:
+        Fixture fixture;
         Body();
         Body(Fixture *fixture);
 
         Body* getNext() { return next; }
         Body* getLast() { return last; }
 
-        Vec2d pos;
-        double ang; // Angle stored in radians
-        Vec2d vel;
-        Vec2d acc;
+        Vec2d getPos() { return pos; };
+        Vec2d getVel() { return vel; };
+        Vec2d getAcc() { return acc; };
+        
+        float getAngle() { return ang; };
 
         void setFixture(Fixture *f);
         void setPos(Vec2d p);
@@ -27,8 +30,12 @@ class Body {
         bool isColliding(Body b);
     private:
         friend class World;
+        
+        Vec2d pos;
+        double ang; // Angle stored in radians
+        Vec2d vel;
+        Vec2d acc;
 
-        Fixture fixture;
         Body* next;
         Body* last;
 };

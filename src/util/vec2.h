@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <ostream>
+#include <valarray>
 
 struct Vec2d {
 
@@ -58,13 +59,24 @@ struct Vec2d {
     void erase() {
         x = 0;
         y = 0;
-    }
+    } 
 
     friend std::ostream& operator<<(std::ostream& os, const Vec2d& vec) {
         os << "(" << vec.x << ", " << vec.y << ")";
         return os;
     }
 
+    Vec2d operator+(const Vec2d& a) {
+        return Vec2d(x + a.x, y + a.y);
+    }
+
+    Vec2d operator-(const Vec2d& b) {
+        return Vec2d(x - b.x, y - b.y);
+    }
+
+    Vec2d operator*(float k) {
+        return Vec2d(k*x, k*y);
+    }
 };
 
 #endif // !VECTOR_2D_H

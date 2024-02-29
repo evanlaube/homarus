@@ -18,9 +18,10 @@ class Polygon : public Shape {
         short getType() const override {
             return TYPE_POLYGON;
         }
-            
+
         std::vector<Vec2d> getVertices() { return vertices; }
-        std::vector<Vec2d> rotateVertices(float angle);
+        void rotate(float angle) override;
+        void rotateVertices(float angle);
 
         bool pointInside(Vec2d point) const override;
         bool checkOverlap(Shape *s) const override;

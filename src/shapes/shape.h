@@ -20,6 +20,10 @@ class Shape {
        
         void attach(Fixture* f);
 
+        Vec2d getPos();
+        float getAngle();
+        virtual void rotate(float angle) = 0;
+
         virtual void calcCentroid() = 0;
         virtual void calcArea() = 0;
 

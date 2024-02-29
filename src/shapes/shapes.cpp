@@ -1,4 +1,6 @@
 
+#include "../physics/fixture.h"
+#include "../physics/body.h"
 #include "shape.h"
 #include "circle.h"
 #include "polygon.h"
@@ -23,6 +25,14 @@ void Shape::calcArea() {
 
 void Shape::calcCentroid() {
     return;
+}
+
+Vec2d Shape::getPos() {
+    return fixture->getBody()->getPos();
+}
+
+float Shape::getAngle() {
+    return fixture->getBody()->getAngle();
 }
 
 Circle::Circle(float radius) {
@@ -77,6 +87,10 @@ bool Polygon::ccwCompare(Vec2d a, Vec2d b) {
     return cross > 0;
 }
 
+void Polygon::rotate(float angle) {
+    rotateVertices(angle);
+}
+
 Polygon::Polygon(std::vector<Vec2d> vertices) {
     this->vertices = vertices;
 
@@ -105,7 +119,6 @@ void Polygon::calcArea() {
 
     area = a;
 }
-
 
 void Polygon::calcCentroid() {
     if(!area) calcArea();
@@ -140,10 +153,7 @@ bool Polygon::checkOverlap(Shape *s) const {
     return false;
 }
 
-std::vector<Vec2d> Polygon::rotateVertices(float theta) {
-
-    std::vector<Vec2d> rotated;
-    
+void Polygon::rotateVertices(float theta) {
     double cosTheta = cos(theta);
     double sinTheta = sin(theta);
 
@@ -156,8 +166,6 @@ std::vector<Vec2d> Polygon::rotateVertices(float theta) {
         float rx = cosTheta * x + sinTheta * y;
         float ry = -sinTheta * x + cosTheta * y;
 
-        rotated.push_back(Vec2d(rx + centroid.x, ry+centroid.y));
+        vertices[i] = Vec2d(rx + centroid.x, ry + centroid.y);
     }
-
-    return rotated;
 }

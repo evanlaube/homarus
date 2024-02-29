@@ -23,6 +23,8 @@ class Circle : public Shape {
         void calcArea() override;
         void calcCentroid() override;
 
+        void rotate(float angle) override { return; };
+
         float getRadius() { return r; }
     private:
         float r;

@@ -18,8 +18,8 @@ class Fixture {
         bool attach(Body* b);
 
         void setShape(Shape *s);
-        Shape* getShape() { return shape; }
-        Body* getBody() { return body; }
+        Shape* getShape() const { return shape; }
+        Body* getBody() const { return body; }
         Shape* shape;
 
     private:

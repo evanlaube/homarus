@@ -4,7 +4,7 @@
 
 #include "../util/vec2.h"
 #include "fixture.h"
-#include <memory>
+#include "../shapes/shape.h"
 
 class Body {
 
@@ -27,7 +27,8 @@ class Body {
         void rotate(float angle);
         Shape* getShape() { return fixture.getShape(); }
 
-        bool isColliding(Body b);
+        bool isColliding(Body *b) const { return fixture.getShape()->checkOverlap(b->fixture.getShape()); };
+        bool pointInside(Vec2d p) const { return fixture.getShape()->pointInside(p); }
     private:
         friend class World;
         

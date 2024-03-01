@@ -109,6 +109,7 @@ void Renderer::drawShape(Shape *s, float x, float y, float a) {
 }
 
 void Renderer::drawShape(Circle *c, float x, float y, float a) {
+    
     drawCircle(x, y, c->getRadius(), 32);
 }
 
@@ -120,12 +121,7 @@ void Renderer::drawShape(Polygon *p, float x, float y, float a) {
 
     glBegin(GL_POLYGON);
 
-    std::vector<Vec2d> verts = p->rotateVertices(a);
-    //std::cout << "Verts: " << std::endl;
-    //for(int i = 0; i < verts.size(); i++) {
-    //    std::cout << "\t" << verts[i] << " vs. " << p->getVertices()[i] << std::endl;
-    //}
-
+    std::vector<Vec2d> verts = p->getVertices();
     for(int i = 0; i < verts.size(); i++) {
         Vec2d vert = verts[i];
         glVertex2f(x - cx + vert.x, y - cy + vert.y);
@@ -150,8 +146,8 @@ void Renderer::drawBody(Body *b) {
     glColor3f(1, 0, 0);
 
     Shape* s = b->getShape();
-
-    drawShape(s, b->pos.x, b->pos.y, b->ang);
+   
+    drawShape(s, b->getPos().x, b->getPos().y, b->getAngle());
 }
 
 void Renderer::displayFps() {

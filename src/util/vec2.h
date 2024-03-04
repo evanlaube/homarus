@@ -25,9 +25,18 @@ struct Vec2d {
         return sqrt(x*x + y*y);
     }
 
+    double magSquared() {
+        // Return magnitude squared - needed in some calculations for efficiency purposes
+        return x*x + y*y;
+    }
+
     Vec2d norm() {
 
         double m = mag();
+
+        if(m == 0) {
+            return Vec2d(0,0);
+        }
 
         double mx = x/m;
         double my = y/m;
@@ -76,6 +85,16 @@ struct Vec2d {
 
     Vec2d operator*(float k) {
         return Vec2d(k*x, k*y);
+    }
+
+    void operator+=(const Vec2d& b) {
+        x = x + b.x;
+        y = y + b.y;
+    }
+
+    void operator-=(const Vec2d& b) {
+        x = x - b.x;
+        y = y - b.y;
     }
 };
 

@@ -55,7 +55,6 @@ void Renderer::update() {
     glfwPollEvents();
 
     close = glfwWindowShouldClose(window);
-    displayFps();
 }
 
 void Renderer::draw() {
@@ -76,7 +75,7 @@ void Renderer::draw() {
 
 
 void Renderer::drawCircle(float x, float y, float r) {
-    Renderer::drawCircle(x, y, r, 32);
+    Renderer::drawCircle(x, y, r, 64);
 }
 
 void Renderer::drawCircle(float x, float y, float r, int triCount) {
@@ -143,7 +142,13 @@ void Renderer::drawBodies() {
 }
 
 void Renderer::drawBody(Body *b) {
-    glColor3f(1, 0, 0);
+    if(b->getShape()->getType() == TYPE_CIRCLE) {
+        glColor3f(1, 0, 0);
+    } else if (b->getShape()->getType() == TYPE_POLYGON) {
+        glColor3f(0, 0, 1); 
+    } else {
+        glColor3f(0, 1, 0);
+    }
 
     Shape* s = b->getShape();
    
@@ -156,4 +161,8 @@ void Renderer::displayFps() {
     ss << "Homarus Test - FPS: " << fps;
     glfwSetWindowTitle(window, ss.str().c_str());
 
+}
+
+void Renderer::setTitle(const char* title) {
+    glfwSetWindowTitle(window, title);
 }

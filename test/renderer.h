@@ -27,7 +27,10 @@ class Renderer {
         void update();
         void exit();
 
+        void setTitle(const char* title);
         void displayFps();
+
+        uint32_t getFrameCount() { return frameCount; }
 
         void drawShape(Shape *s, float x, float y, float a);
         void drawShape(Circle *c, float x, float y, float a);

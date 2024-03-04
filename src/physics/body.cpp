@@ -13,6 +13,8 @@ Body::Body(Fixture *f) {
     pos = Vec2d(0,0);
     vel = Vec2d(0, 0);
     acc = Vec2d(0, 0);
+    // Angle variable simply to keep track of angle for drawing purposes. The
+    // actual rotation is stored within the shape by rotating its vertices.
     ang = 0;
 
     last = nullptr;

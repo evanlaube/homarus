@@ -4,6 +4,7 @@
 
 #include "../homarus.h"
 #include "shape.h"
+#include "../util/vec2.h"
 
 class Circle : public Shape {
 
@@ -21,6 +22,10 @@ class Circle : public Shape {
         bool checkOverlap(Shape *s) const override;
         bool checkCircleOverlap(Circle *s) const override;
         bool checkPolygonOverlap(Polygon *s) const override;
+
+        Vec2d getOverlap(Shape *s)  const override;
+        Vec2d getCircleOverlap(Circle *s) const override;
+        Vec2d getPolygonOverlap(Polygon *s) const override;
 
         void calcArea() override;
         void calcCentroid() override;

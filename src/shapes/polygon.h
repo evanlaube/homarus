@@ -15,9 +15,7 @@ class Polygon : public Shape {
             return new Polygon(*this);
         }
 
-        short getType() const override {
-            return TYPE_POLYGON;
-        }
+        short getType() const override { return TYPE_POLYGON; }
 
         std::vector<Vec2d> getVertices() { return vertices; }
         void rotate(float angle) override;
@@ -28,6 +26,10 @@ class Polygon : public Shape {
         bool checkCircleOverlap(Circle *s) const override;
         bool checkPolygonOverlap(Polygon *s) const override;
 
+        Vec2d getOverlap(Shape *s)  const override;
+        Vec2d getCircleOverlap(Circle *s) const override;
+        Vec2d getPolygonOverlap(Polygon *s) const override;
+    
         void calcArea() override;
         void calcCentroid() override;
 

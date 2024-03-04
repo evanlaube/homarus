@@ -111,15 +111,14 @@ void Polygon::calcCentroid() {
 
 bool Polygon::pointInside(Vec2d p) const {
     // Make position relative to body's position, not world
-    p = p - getPos();
-
     Vec2d v1 = vertices[0];
+    v1 = v1 + getPos();
 
     int intersects = 0;
     
     for(int i = 0; i <= vertices.size(); i++) {
         Vec2d v2 = vertices[i%vertices.size()];
-        
+        v2 = v2 + getPos();
 
         //std::cout << "p.y: " << p.y << " | Max: " << std::max(v1.y, v2.y) << " | Min: " << std::min(v1.y, v2.y) << std::endl;
         if(p.y >= std::min(v1.y, v2.y) && p.y <= std::max(v1.y, v2.y)) {
@@ -161,13 +160,13 @@ bool Polygon::checkCircleOverlap(Circle *s) const {
 bool Polygon::checkPolygonOverlap(Polygon *s) const {
     
     for(Vec2d v : s->getVertices()) {
-        if(pointInside(v)) {
+        if(pointInside(v + s->getPos())) {
             return true;
         }
     }
 
     for(Vec2d v : vertices) {
-        if(s->pointInside(v)) {
+        if(s->pointInside(v + s->getPos())) {
             return true;
         }
     }
@@ -190,4 +189,68 @@ void Polygon::rotateVertices(float theta) {
 
         vertices[i] = Vec2d(rx + centroid.x, ry + centroid.y);
     }
+}
+
+Vec2d Polygon::getOverlap(Shape *s) const {
+    return s->getPolygonOverlap((Polygon*)this);
+}
+
+Vec2d Polygon::getCircleOverlap(Circle* c) const {
+    return c->getPolygonOverlap((Polygon*) this);
+}
+
+Vec2d Polygon::getPolygonOverlap(Polygon* s) const {
+    Vec2d point;
+    Polygon* container = nullptr;
+
+    for(Vec2d v : vertices) {
+        v = v + getPos();
+        if(s->pointInside(v)) {
+            point = v;
+            container = s;
+            break;
+        }
+    }
+
+    if(!(point.x == 0 && point.y == 0)) {
+        for(Vec2d v : s->vertices) {
+            v = v + s->getPos();
+            if(pointInside(v)) {
+                container = (Polygon*) this; 
+                point = v;
+                break;
+            }
+        }
+    }
+
+    if(container == nullptr) {
+        std::cout << "No container defined" << std::endl;
+        return Vec2d(0,0);
+    }
+
+    Vec2d closestEdgePoint;
+    double leastDistSquare = -1;
+
+    Vec2d v1 = container->getVertices()[0] + container->getPos();
+    for(int i = 1; i <= container->getVertices().size(); i++) {
+       Vec2d v2 = container->getVertices()[i%container->getVertices().size()] + container->getPos(); 
+
+       double mLine = (v2.y - v1.y) / (v2.x - v1.x);
+       double mPerp = (v1.x - v2.x) / (v2.y - v1.y);
+    
+       double xInt = (v1.y - point.y - mLine*v1.x + mPerp*point.x) / (mPerp - mLine);
+       double yInt = mPerp * (xInt - point.x) + point.y;
+
+       Vec2d intersect = Vec2d(xInt, yInt);
+       double distSquare = (point - intersect).magSquared();
+
+       if(distSquare < leastDistSquare || leastDistSquare == -1) {
+           leastDistSquare = distSquare;
+           closestEdgePoint = intersect;
+       }
+
+       v1 = v2;
+    }
+
+    return closestEdgePoint - point;
 }

@@ -21,6 +21,7 @@ class Shape {
         float area;
        
         void attach(Fixture* f);
+        Fixture* getFixture() { return fixture; }
 
         Vec2d getPos() const;
         float getAngle();
@@ -34,6 +35,11 @@ class Shape {
         virtual bool checkOverlap(Shape *s)  const = 0;
         virtual bool checkCircleOverlap(Circle *s) const = 0;
         virtual bool checkPolygonOverlap(Polygon *s) const = 0;
+
+        virtual Vec2d getOverlap(Shape *s)  const = 0;
+        virtual Vec2d getCircleOverlap(Circle *s) const = 0;
+        virtual Vec2d getPolygonOverlap(Polygon *s) const = 0;
+
     protected:
         float maxRadius;
     private:

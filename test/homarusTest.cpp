@@ -43,8 +43,9 @@ int main() {
     Circle c(75);
     Fixture* f = new Fixture(&c);
     Body* b1 = world.createBody(f);
-    b1->setPos(Vec2d(540, 350));
-    b1->setVel(Vec2d(0, 150));
+    b1->setPos(Vec2d(980, 360));
+    b1->setVel(Vec2d(-100, 0));
+    b1->setMass(75);
     b1->setType(BODY_DYMANIC);
 
     std::vector<Vec2d> verts;
@@ -53,32 +54,34 @@ int main() {
     verts.push_back(Vec2d(880, 40));
     verts.push_back(Vec2d(0, 40));
 
-    Polygon floorPolygon(verts);
-    Fixture* floorFixture = new Fixture(&floorPolygon);
-    Body* floor = world.createBody(floorFixture);
-    floor->setPos(Vec2d(540, 620));
-    floor->setType(BODY_STATIC);
-    floor->rotate(0.01);
+    //Polygon floorPolygon(verts);
+    //Fixture* floorFixture = new Fixture(&floorPolygon);
+    //Body* floor = world.createBody(floorFixture);
+    //floor->setPos(Vec2d(540, 620));
+    //floor->setType(BODY_STATIC);
+    //floor->rotate(0.01);
 
     std::vector<Vec2d> verts2;
     verts2.push_back(Vec2d(0, 0));
-    verts2.push_back(Vec2d(50, 0));
-    verts2.push_back(Vec2d(50, 50));
-    verts2.push_back(Vec2d(0, 50));
+    verts2.push_back(Vec2d(150, 0));
+    verts2.push_back(Vec2d(150, 150));
+    verts2.push_back(Vec2d(0, 150));
 
     Polygon square(verts2);
     Fixture* squareFixture = new Fixture(&square);
     Body* s = world.createBody(squareFixture);
     s->setType(BODY_DYMANIC);
-    s->rotate(0.1);
-    s->setPos(Vec2d(540, 0));
-    s->setVel(Vec2d(0, 150));
+    s->rotate(M_PI/4);
+    s->setPos(Vec2d(100, 250));
+    s->setMass(50);
+    s->setVel(Vec2d(100, 0));
 
     //Fixture* f3 = new Fixture(new Circle(30));
     //Body *b2 = world.createBody(f3);
-    //b2->setPos(Vec2d(540, 400));
-    //b2->setVel(Vec2d(0, 200));
-    //b2->setType(BODY_STATIC);
+    //b2->setPos(Vec2d(100, 335));
+    //b2->setVel(Vec2d(100, 0));
+    //b2->setType(BODY_DYMANIC);
+    //b2->setMass(30*30);
     
 
     uint64_t currentTime = getTime();

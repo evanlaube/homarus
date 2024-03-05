@@ -3,6 +3,7 @@
 #define POLYGON_H
 
 #include "../homarus.h"
+#include "../physics/collision.h"
 #include "shape.h"
 #include "../util/vec2.h"
 #include <vector>
@@ -26,9 +27,9 @@ class Polygon : public Shape {
         bool checkCircleOverlap(Circle *s) const override;
         bool checkPolygonOverlap(Polygon *s) const override;
 
-        Vec2d getOverlap(Shape *s)  const override;
-        Vec2d getCircleOverlap(Circle *s) const override;
-        Vec2d getPolygonOverlap(Polygon *s) const override;
+        Collision getCollision(Shape *s)  const override;
+        Collision getCircleCollision(Circle *s) const override;
+        Collision getPolygonCollision(Polygon *s) const override;
     
         void calcArea() override;
         void calcCentroid() override;

@@ -4,6 +4,7 @@
 
 
 #include "../util/vec2.h"
+#include "../physics/collision.h"
 
 class Fixture;
 class Circle;
@@ -36,9 +37,9 @@ class Shape {
         virtual bool checkCircleOverlap(Circle *s) const = 0;
         virtual bool checkPolygonOverlap(Polygon *s) const = 0;
 
-        virtual Vec2d getOverlap(Shape *s)  const = 0;
-        virtual Vec2d getCircleOverlap(Circle *s) const = 0;
-        virtual Vec2d getPolygonOverlap(Polygon *s) const = 0;
+        virtual Collision getCollision(Shape *s)  const = 0;
+        virtual Collision getCircleCollision(Circle *s) const = 0;
+        virtual Collision getPolygonCollision(Polygon *s) const = 0;
 
     protected:
         float maxRadius;

@@ -17,7 +17,7 @@ class World {
 
         void update(float timestep);
         void updateBody(Body *b, float timestep);
-        void collide(Body* a, Body* b);
+        void collide(Body* a, Body* b, Collision c);
 
         void setGravity(float x, float y) { gravity = Vec2d(x,y); }
         Vec2d getGravity() const { return gravity; }

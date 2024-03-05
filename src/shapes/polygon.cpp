@@ -1,5 +1,6 @@
 
 #include "../physics/fixture.h"
+#include "../physics/collision.h"
 #include "shape.h"
 #include "circle.h"
 #include "polygon.h"
@@ -191,15 +192,15 @@ void Polygon::rotateVertices(float theta) {
     }
 }
 
-Vec2d Polygon::getOverlap(Shape *s) const {
-    return s->getPolygonOverlap((Polygon*)this);
+Collision Polygon::getCollision(Shape *s) const {
+    return s->getPolygonCollision((Polygon*)this);
 }
 
-Vec2d Polygon::getCircleOverlap(Circle* c) const {
-    return c->getPolygonOverlap((Polygon*) this);
+Collision Polygon::getCircleCollision(Circle* c) const {
+    return c->getPolygonCollision((Polygon*) this);
 }
 
-Vec2d Polygon::getPolygonOverlap(Polygon* s) const {
+Collision Polygon::getPolygonCollision(Polygon* s) const {
     Vec2d point;
     Polygon* container = nullptr;
 
@@ -224,12 +225,13 @@ Vec2d Polygon::getPolygonOverlap(Polygon* s) const {
     }
 
     if(container == nullptr) {
-        std::cout << "No container defined" << std::endl;
-        return Vec2d(0,0);
+        return Collision();
     }
 
     Vec2d closestEdgePoint;
     double leastDistSquare = -1;
+
+    double intersectTangent;
 
     Vec2d v1 = container->getVertices()[0] + container->getPos();
     for(int i = 1; i <= container->getVertices().size(); i++) {
@@ -247,10 +249,13 @@ Vec2d Polygon::getPolygonOverlap(Polygon* s) const {
        if(distSquare < leastDistSquare || leastDistSquare == -1) {
            leastDistSquare = distSquare;
            closestEdgePoint = intersect;
+            intersectTangent = mLine;
        }
 
        v1 = v2;
     }
 
-    return closestEdgePoint - point;
+    Vec2d overlap = closestEdgePoint - point;
+    Vec2d tangent = Vec2d(1, intersectTangent).norm();
+    return Collision(overlap, tangent, closestEdgePoint);
 }

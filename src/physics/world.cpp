@@ -3,6 +3,7 @@
 #include "body.h"
 #include "../util/blockallocator.h"
 #include "../homarus.h"
+#include "collision.h"
 #include <iostream>
 
 
@@ -39,17 +40,22 @@ void World::updateBody(Body*b, float timestep) {
             continue;
         }
 
-        if(b->isColliding(collider)) {
-            collide(b, collider);
+        Collision c = b->fixture.shape->getCollision(collider->fixture.shape);
+
+        if(c.colliding)  {
+            collide(b, collider, c);
         }
         
         collider = collider->getNext();
     }
 }
 
-void World::collide(Body *a, Body *b) {
-    Vec2d overlap = a->fixture.shape->getOverlap(b->fixture.shape);
-    std::cout << "Overlap before collision: " << overlap << std::endl;
+void World::collide(Body *a, Body *b, Collision c) {
+    std::cout << c << std::endl;
+    Vec2d overlap = c.overlap;
+    Vec2d tangent = c.tangent;
+    Vec2d intersect = c.intersection;
+    //std::cout << "Overlap before collision: " << overlap << std::endl;
 
     // This check can be made more efficient
     Vec2d aVel = a->fixture.getBody()->vel;
@@ -72,11 +78,11 @@ void World::collide(Body *a, Body *b) {
     a->pos += overlap*1.0001 * (aVelMag /(aVelMag + bVelMag));
     b->pos -= overlap*1.0001 * (bVelMag /(aVelMag + bVelMag));
 
-    std::cout << "Overlap after collision: " << a->fixture.shape->getOverlap(b->fixture.shape) << std::endl;
-    
+    //std::cout << "Overlap after collision: " << a->fixture.shape->getOverlap(b->fixture.shape) << std::endl;
+
     // TODO: Apply conservation of linear and angular momentum to alter velocities
     // Need a way to get the intersection point of the two bodies for angular momentum transfer,
-    // but this is a later problem
+    // as well as the tangent along the collision
     a->vel.erase();
     b->vel.erase();
 }

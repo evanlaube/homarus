@@ -1,5 +1,6 @@
 
 #include "../physics/fixture.h"
+#include "../physics/collision.h"
 #include "shape.h"
 #include "circle.h"
 #include "polygon.h"
@@ -99,24 +100,40 @@ bool Circle::checkPolygonOverlap(Polygon *s) const {
     return false;
 }
 
-Vec2d Circle::getOverlap(Shape* s) const {
-    return s->getCircleOverlap((Circle*) this);
+Collision Circle::getCollision(Shape* s) const {
+    return s->getCircleCollision((Circle*) this);
 }
 
-Vec2d Circle::getCircleOverlap(Circle* s) const {
+Collision Circle::getCircleCollision(Circle* s) const {
     Vec2d a = getPos();
     Vec2d b = s->getPos();
 
     Vec2d diff = a - b;
-    float dist = diff.mag();
+    double dist = diff.mag();
+
+    if(dist > (r+s->getRadius())) {
+        return Collision();
+    }
+
     Vec2d diffNorm = diff *  (1/dist);
 
-    float overlap = (r + s->r) - dist;
-    return diffNorm * overlap;
+    double overlapAmount = (r + s->r) - dist;
+    Vec2d overlap = diffNorm * overlapAmount;
+
+    double mTangent = (a.x - b.x) / (b.y - a.y);
+    Vec2d tangent = Vec2d(1, mTangent).norm();
+
+    Vec2d intersection = b + (diffNorm * s->r); 
+
+    return Collision(overlap, tangent, intersection);
 }
 
-Vec2d Circle::getPolygonOverlap(Polygon* s) const {
+Collision Circle::getPolygonCollision(Polygon* s) const {
     std::vector<Vec2d> verts = s->getVertices();
+
+    Vec2d overlap;
+    Vec2d tangent;
+    Vec2d intersect;
 
     for(Vec2d v : verts) { 
         v = v + s->getPos();
@@ -126,7 +143,18 @@ Vec2d Circle::getPolygonOverlap(Polygon* s) const {
             double dist = diff.mag();
 
             double overlapAmount = r-dist;
-            return diff.norm() * overlapAmount;
+            overlap = diff.norm() * overlapAmount;
+
+            v += overlap;
+
+            diff = getPos() - v;
+            double mPerp = (diff.x - v.x) / (v.y - diff.y); 
+            double mTang = 1/mPerp;
+            tangent = Vec2d(1, mTang).norm(); 
+
+            intersect = v;
+
+            return Collision(overlap, tangent, intersect);
         }
     }
 
@@ -145,7 +173,7 @@ Vec2d Circle::getPolygonOverlap(Polygon* s) const {
         // crosses through the center of the circle.
         double xInt = ((mLine * v1.x) - (mPerp * getPos().x) + getPos().y - v1.y) / (mLine - mPerp);
         double yInt = mLine * (xInt - v1.x) + v1.y;
-        Vec2d intersect(xInt, yInt);
+        intersect = Vec2d(xInt, yInt);
         //std::cout << "Intersect at: " << intersect << std::endl;
        
         if(pointInside(intersect)) {
@@ -159,27 +187,29 @@ Vec2d Circle::getPolygonOverlap(Polygon* s) const {
 
             if(s->pointInside(Vec2d(x1, y1))) {
                 overlapPoint = Vec2d(x1, y1);
-                //std::cout << "I = " << intersect << "\nO_1 = " << Vec2d(x1,y1) <<  "\nA = "
-                //    << v1 << "\nB = " << v2 << "\nC = " << getPos() 
-                //    << "\na = " << a << "\nb = " << b << "\nc = " << c << std::endl;
-                return (intersect - overlapPoint);
+                overlap = (intersect - overlapPoint);
+                if(overlap.x == 0 && overlap.y == 0)
+                    return Collision();
+                tangent = Vec2d(1, mLine).norm();
+                return Collision(overlap, tangent, intersect);
             } else {
                 double x2 = (-b - sqrt(b*b - 4*a*c) ) / (2*a);
                 double y2 = mPerp * (x2 - getPos().x) + getPos().y;
-
-                //std::cout << "I = " << intersect << "\nO1 = " << Vec2d(x1,y1) << "\nO2 = " << Vec2d(x2,y2) << "\nA = "
-                //    << v1 << "\nB = " << v2 << "\nC = " << getPos() << std::endl;
-
                 if(s->pointInside(Vec2d(x2, y2))) {
                     overlapPoint = Vec2d(x2, y2);
-                    return (overlapPoint - intersect);
+                    overlap = (overlapPoint - intersect);
+                    if(overlap.x == 0 && overlap.y == 0)
+                        return Collision();
+                    tangent = Vec2d(1, mLine).norm();
+                    return Collision(overlap, tangent, intersect);
                 }
             }
+
         }
 
 
         v1 = v2;
     }
 
-    return Vec2d(0,0);
+    return Collision();
 }

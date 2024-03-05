@@ -108,20 +108,27 @@ Collision Circle::getCircleCollision(Circle* s) const {
     Vec2d a = getPos();
     Vec2d b = s->getPos();
 
-    Vec2d diff = a - b;
+    Vec2d diff = b - a;
     double dist = diff.mag();
 
     if(dist > (r+s->getRadius())) {
         return Collision();
     }
 
-    Vec2d diffNorm = diff *  (1/dist);
+    Vec2d diffNorm = diff * (1/dist);
 
     double overlapAmount = (r + s->r) - dist;
     Vec2d overlap = diffNorm * overlapAmount;
 
     double mTangent = (a.x - b.x) / (b.y - a.y);
-    Vec2d tangent = Vec2d(1, mTangent).norm();
+
+    Vec2d tangent;
+    
+    if(b.y == a.y) {
+        tangent = Vec2d(0, 1);
+    } else {
+        tangent = Vec2d(1, mTangent).norm();
+    }
 
     Vec2d intersection = b + (diffNorm * s->r); 
 
@@ -139,7 +146,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
         v = v + s->getPos();
 
         if(pointInside(v)) {
-            Vec2d diff = getPos() - v;
+            Vec2d diff = v - getPos();
             double dist = diff.mag();
 
             double overlapAmount = r-dist;
@@ -147,12 +154,18 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
 
             v += overlap;
 
-            diff = getPos() - v;
-            double mPerp = (diff.x - v.x) / (v.y - diff.y); 
-            double mTang = 1/mPerp;
+            double mTang = (v.x - getPos().x) / (getPos().y - v.y);
             tangent = Vec2d(1, mTang).norm(); 
 
             intersect = v;
+            
+            std::cout << 
+                "C = " << getPos() << std::endl <<
+                "V = " << v << std::endl <<
+                "d = " << getPos() - v << std::endl <<
+                "m_T = " << mTang << std::endl <<
+                "t = " << tangent << std::endl << 
+                "R = " << r << std::endl;
 
             return Collision(overlap, tangent, intersect);
         }

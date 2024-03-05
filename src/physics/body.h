@@ -31,6 +31,9 @@ class Body {
         Shape* getShape() { return fixture.getShape(); }
         short getType() const { return type; }
 
+        double getMass() { return mass; }
+        void setMass(double mass) { this->mass = mass; }
+
         bool isColliding(Body *b) const { return fixture.getShape()->checkOverlap(b->fixture.getShape()); };
         bool pointInside(Vec2d p) const { return fixture.getShape()->pointInside(p); }
     private:
@@ -43,6 +46,8 @@ class Body {
         double ang; // Angle stored in radians
         double angVel;
         double angAcc;
+
+        double mass;
         
         Body* next;
         Body* last;

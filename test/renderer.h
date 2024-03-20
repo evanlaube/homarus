@@ -26,7 +26,7 @@ class Renderer {
         void draw();
         void update();
         void exit();
-
+        
         void setTitle(const char* title);
         void displayFps();
 

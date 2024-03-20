@@ -13,6 +13,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -25,7 +26,7 @@ uint64_t getTime() {
 
 int main() {
     World world;
-    //world.setGravity(0, 45000);
+    world.setGravity(0, 9800*2);
     
     Renderer renderer = Renderer(&world);
 
@@ -38,67 +39,90 @@ int main() {
     //      3. Create a fixture and attach the shape
     //      4. Attach fixture to body
     //      5. Set a position and angle to the body
-   
-   
-    Circle c(75);
+    
+    /*
+    Circle c = Circle(50);
     Fixture* f = new Fixture(&c);
     Body* b1 = world.createBody(f);
-    b1->setPos(Vec2d(980, 360));
-    b1->setVel(Vec2d(-100, 0));
-    b1->setMass(75);
-    b1->setType(BODY_DYMANIC);
+    b1->setPos(Vec2d(540, 360));
+    b1->setVel(Vec2d(0, 0));
+    b1->setMass((25*25));
+    b1->rotate(M_PI/4);
+    b1->setType(BODY_DYMANIC); 
+    */
 
-    std::vector<Vec2d> verts;
-    verts.push_back(Vec2d(0, 0));
-    verts.push_back(Vec2d(880, 0));
-    verts.push_back(Vec2d(880, 40));
-    verts.push_back(Vec2d(0, 40));
 
-    //Polygon floorPolygon(verts);
-    //Fixture* floorFixture = new Fixture(&floorPolygon);
-    //Body* floor = world.createBody(floorFixture);
-    //floor->setPos(Vec2d(540, 620));
-    //floor->setType(BODY_STATIC);
-    //floor->rotate(0.01);
+    for(int i = 0; i < 500; i++) {
+        float r = 4;//20 + ((float)rand()/RAND_MAX) * 15;
 
-    std::vector<Vec2d> verts2;
-    verts2.push_back(Vec2d(0, 0));
-    verts2.push_back(Vec2d(150, 0));
-    verts2.push_back(Vec2d(150, 150));
-    verts2.push_back(Vec2d(0, 150));
+        float x = 2 + r + ((float)rand()/RAND_MAX) * (1080-r-r-4);
+        float y = r + ((float)rand()/RAND_MAX) * (720-r);
 
-    Polygon square(verts2);
-    Fixture* squareFixture = new Fixture(&square);
-    Body* s = world.createBody(squareFixture);
-    s->setType(BODY_DYMANIC);
-    s->rotate(M_PI/4);
-    s->setPos(Vec2d(100, 250));
-    s->setMass(50);
-    s->setVel(Vec2d(100, 0));
+        Circle c(r);
+        Fixture* f = new Fixture(&c);
+        Body* b1 = world.createBody(f);
+        b1->setPos(Vec2d(x, y));
+        b1->setVel(Vec2d(200 - ((float)rand()/RAND_MAX) * 400, 200 - ((float)rand()/RAND_MAX) * 400));
+        //b1->setVel(Vec2d(200, 200));
+        b1->setMass(r*r*3.14);
+        b1->setType(BODY_DYMANIC);
+    }
 
-    //Fixture* f3 = new Fixture(new Circle(30));
-    //Body *b2 = world.createBody(f3);
-    //b2->setPos(Vec2d(100, 335));
-    //b2->setVel(Vec2d(100, 0));
-    //b2->setType(BODY_DYMANIC);
-    //b2->setMass(30*30);
-    
+    std::vector<Vec2d> floorVerts;
+    floorVerts.push_back(Vec2d(0, 0));
+    floorVerts.push_back(Vec2d(1080, 0));
+    floorVerts.push_back(Vec2d(1080, 10));
+    floorVerts.push_back(Vec2d(0, 10));
+
+    Polygon topFloorShape(floorVerts);
+    Fixture* topFloorFixture = new Fixture(&topFloorShape);
+    Body* s = world.createBody(topFloorFixture);
+    s->setType(BODY_STATIC);
+    s->rotate(0.00001); // To prevent having 0 or infinite slope
+    s->setPos(Vec2d(540, 5));
+
+    Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
+    Body* bottomFloor = world.createBody(bottomFloorFixture);
+    bottomFloor->setType(BODY_STATIC);
+    bottomFloor->rotate(0.00001);
+    bottomFloor->setPos(Vec2d(540, 720-5));
+
+    std::vector<Vec2d> wallVerts;
+    wallVerts.push_back(Vec2d(0, 10));
+    wallVerts.push_back(Vec2d(10, 10));
+    wallVerts.push_back(Vec2d(10, 710));
+    wallVerts.push_back(Vec2d(0, 710));
+
+    Polygon wallShape(wallVerts);
+    Fixture* leftWallFixture = new Fixture(&wallShape);
+    Body* leftWall = world.createBody(leftWallFixture);
+    leftWall->setType(BODY_STATIC);
+    leftWall->rotate(0.00001);
+    leftWall->setPos(Vec2d(5, 360));
+
+    Fixture* rightWallFixture = new Fixture(&wallShape);
+    Body* rightWall = world.createBody(rightWallFixture);
+    rightWall->setType(BODY_STATIC);
+    rightWall->rotate(0.00001);
+    rightWall->setPos(Vec2d(1080-5, 360));
+
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
 
     while(renderer.close == false) {
-        float elapsed = (currentTime-lastTime)/1000.0; // Convert milliseconds to seconds
+        double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
         
         if(renderer.getFrameCount() % 60 == 0) {
             std::stringstream ss;
-            ss << "Homarus Test - FPS: " << 1/elapsed;
+            ss << "Homarus Test - Total KE: " << world.getTotalKE();
             renderer.setTitle(ss.str().c_str());
         }
 
         world.update(elapsed);
         renderer.draw();
         renderer.update();
+
         lastTime = currentTime;
         currentTime = getTime();
     }

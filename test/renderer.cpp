@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <sstream>
+#include <string>
 #include <vector>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -73,7 +74,6 @@ void Renderer::draw() {
     }
 }
 
-
 void Renderer::drawCircle(float x, float y, float r) {
     Renderer::drawCircle(x, y, r, 64);
 }
@@ -108,7 +108,6 @@ void Renderer::drawShape(Shape *s, float x, float y, float a) {
 }
 
 void Renderer::drawShape(Circle *c, float x, float y, float a) {
-    
     drawCircle(x, y, c->getRadius(), 32);
 }
 

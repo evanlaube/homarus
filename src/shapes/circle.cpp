@@ -159,13 +159,13 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
 
             intersect = v;
             
-            std::cout << 
-                "C = " << getPos() << std::endl <<
-                "V = " << v << std::endl <<
-                "d = " << getPos() - v << std::endl <<
-                "m_T = " << mTang << std::endl <<
-                "t = " << tangent << std::endl << 
-                "R = " << r << std::endl;
+            //std::cout << 
+            //    "C = " << getPos() << std::endl <<
+            //    "V = " << v << std::endl <<
+            //    "d = " << getPos() - v << std::endl <<
+            //    "m_T = " << mTang << std::endl <<
+            //    "t = " << tangent << std::endl << 
+            //    "R = " << r << std::endl;
 
             return Collision(overlap, tangent, intersect);
         }
@@ -200,7 +200,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
 
             if(s->pointInside(Vec2d(x1, y1))) {
                 overlapPoint = Vec2d(x1, y1);
-                overlap = (intersect - overlapPoint);
+                overlap = (overlapPoint - intersect);
                 if(overlap.x == 0 && overlap.y == 0)
                     return Collision();
                 tangent = Vec2d(1, mLine).norm();

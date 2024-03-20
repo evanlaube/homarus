@@ -12,9 +12,9 @@ World::World() {
 }
 
 void World::update(float timestep) {
+    timestep = 0.01;
 
     Body* b = bodyLink;
-    timestep = 0.01;
 
     while(b != nullptr) {
         //updateBody(b, timestep);
@@ -83,12 +83,17 @@ void World::updateBody(Body*b, float timestep) {
 
 void World::collide(Body *a, Body *b, Collision c) {
     
+
+    if(a->getType() == BODY_STATIC && b->getType() == BODY_STATIC)
+        return;
+
     if(!c.colliding) {
         std::cout << "Collising triggered, but not colliding" << std::endl;
         return;
     }
 
-    std::cout << "KE before collision: " << getTotalKE() << std::endl;
+    //std::cout << c << std::endl;
+    //std::cout << "KE before collision: " << getTotalKE() << std::endl;
     Vec2d overlap = c.overlap;
     Vec2d tangent = c.tangent;
     Vec2d intersect = c.intersection;
@@ -110,6 +115,14 @@ void World::collide(Body *a, Body *b, Collision c) {
         }
     }
 
+    if(b->getType() == BODY_STATIC) {
+        bVelMag = 0;
+    }
+
+    if(a->getType() == BODY_STATIC) {
+        aVelMag = 0;
+    }
+
     // Static Collision
     // A small pecrentage gap is needed (1%) in order to stop objects from
     // 'sticking' together (it's an interesting bug). Therefore,
@@ -128,13 +141,21 @@ void World::collide(Body *a, Body *b, Collision c) {
     double p2 = (a->mass * dpnormA + b->mass * dpnormB + a->mass * (dpnormA - dpnormB)) / (a->mass + b->mass);
     double p1 = p2 - (dpnormA - dpnormB);
 
+    if(a->getType() == BODY_STATIC) {
+        p1 = 0;
+        p2 = -dpnormB;
+    } else if(b->getType() == BODY_STATIC) {
+        p2 = 0;
+        p1 = -dpnormA;
+    }
+
     a->vel.x = dptanA * tangent.x + p1 * normal.x;
     a->vel.y = dptanA * tangent.y + p1 * normal.y;
 
     b->vel.x = dptanB * tangent.x + p2 * normal.x;
     b->vel.y = dptanB * tangent.y + p2 * normal.y;
 
-    std::cout << "KE after collision: " << getTotalKE() << std::endl;
+    //std::cout << "KE after collision: " << getTotalKE() << std::endl;
 }
 
 Body* World::createBody(Fixture *f) {

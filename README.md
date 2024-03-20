@@ -2,6 +2,8 @@
 
 Homarus is a lightweight physics simulation library written in C++. It is designed to provide a simple yet powerful framework for simulating rigid body dynamics, collisions, and interactions.
 
+![](https://github.com/evanlaube/homarus/blob/main/assets/readme/pressureSim.gif)
+
 ## Current Features
 
 - Rigid body simulation

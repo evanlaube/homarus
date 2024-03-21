@@ -110,6 +110,9 @@ int main() {
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
 
+    double totalUpdateTime = 0;
+    double totalRenderTime = 0;
+
     while(renderer.close == false) {
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
         
@@ -117,11 +120,24 @@ int main() {
             std::stringstream ss;
             ss << "Homarus Test - Total KE: " << world.getTotalKE();
             renderer.setTitle(ss.str().c_str());
+
+            std::cout << "Average render time per frame (s): " << totalRenderTime/60 << std::endl;
+            std::cout << "Average update time per frame (s): " << totalUpdateTime/60 << std::endl;
+            std::cout << "Average FPS: " << 1 / (totalRenderTime/60 + totalUpdateTime/60) << std::endl;
+
+            totalUpdateTime = 0;
+            totalRenderTime = 0;
         }
 
+        double t = getTime() / (double)1000.0;
         world.update(elapsed);
+
+        totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
+
+        t = getTime() / (double)1000.0;
         renderer.draw();
         renderer.update();
+        totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 
         lastTime = currentTime;
         currentTime = getTime();

@@ -57,14 +57,14 @@ Polygon::Polygon(std::vector<Vec2d> vertices) {
     centroid = Vec2d(0,0);
 
     float maxDistSquare = 0;
-    for(Vec2d v : vertices) {
+    for(Vec2d v : this->vertices) {
         Vec2d diff = centroid - v;
         float distSquare = diff.x*diff.x + diff.y*diff.y;
         if(distSquare > maxDistSquare) {
             maxDistSquare = distSquare;
         }
     }
-    maxRadius = maxDistSquare;
+    maxRadius = sqrt(maxDistSquare);
 
     std::cout << "Area: " << area << std::endl;
     std::cout << "Centroid: (" << centroid.x << ", " << centroid.y << ")" << std::endl;

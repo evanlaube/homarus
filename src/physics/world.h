@@ -5,12 +5,15 @@
 #include "body.h"
 #include "../util/blockallocator.h"
 #include "../util/vec2.h"
+#include "../util/gridpartitioner.h"
 
 class World {
     public:
         World();
     
         BlockAllocator allocator;
+
+        GridPartitioner partitioner;
 
         Body* bodyLink = nullptr;
         int bodyCount = 0;
@@ -24,7 +27,7 @@ class World {
         void setGravity(float x, float y) { gravity = Vec2d(x,y); }
         Vec2d getGravity() const { return gravity; }
 
-        Body* createBody(Fixture *f);
+        Body* createBody(Fixture *f, Vec2d pos);
     private:
         Vec2d gravity;
 };

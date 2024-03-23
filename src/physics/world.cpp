@@ -4,16 +4,20 @@
 #include "../util/blockallocator.h"
 #include "../homarus.h"
 #include "collision.h"
+#include "../util/gridpartitioner.h"
 #include <iostream>
+#include <unordered_set>
 
 
-World::World() {
+// TODO: Make grid partitioner support infinite size
+// For now initialize width and height values
+// TODO: Make grid partitioner assume best size for the grid
+// For now just use 20 subdivisions?
+World::World() : partitioner(20, 20, 1080, 720) {
     gravity = Vec2d(0,0);
 }
 
 void World::update(float timestep) {
-    timestep = 0.01;
-
     Body* b = bodyLink;
 
     while(b != nullptr) {
@@ -27,57 +31,36 @@ void World::update(float timestep) {
         } else {
             b->vel.erase();
         }
+        
+        Vec2d v = b->getPos();
         b = b->next;
     }
+
+
+    partitioner.update(bodyLink);
 
     b = bodyLink;
     while(b != nullptr) {
-        Body *collider = bodyLink;
-        while(collider != nullptr) {
+        std::unordered_set<Body*> neighbors = partitioner.getNeighbors(b);
+
+        if(neighbors.size() > 0) {
+            //std::cout << neighbors.size() << std::endl;
+        }
+
+        for(Body* collider : neighbors) {
             if(b == collider) {
-                collider = b->getNext();
                 continue;
             }
 
-            Collision c = b->fixture.shape->getCollision(collider->fixture.shape);
+            Collision c = b->getShape()->getCollision(collider->getShape());
 
-            if(c.colliding)  {
+            if(c.colliding) {
                 collide(b, collider, c);
             }
 
-            collider = collider->getNext();
-        }
-        b = b->next;
-    }
-}
-
-void World::updateBody(Body*b, float timestep) {
-
-    b->acc += gravity * timestep;
-
-    if(b->getType() != BODY_STATIC) {
-        b->pos += (b->vel * timestep);
-        b->vel += (b->acc * timestep);
-        b->acc.erase();
-    } else {
-        b->vel.erase();
-    }
-
-    Body *collider = bodyLink;
-    int i = 0;
-    while(collider != nullptr) {
-        if(b == collider) {
-            collider = b->getNext();
-            continue;
         }
 
-        Collision c = b->fixture.shape->getCollision(collider->fixture.shape);
-
-        if(c.colliding)  {
-            collide(b, collider, c);
-        }
-        
-        collider = collider->getNext();
+        b = b->getNext();
     }
 }
 
@@ -158,19 +141,24 @@ void World::collide(Body *a, Body *b, Collision c) {
     //std::cout << "KE after collision: " << getTotalKE() << std::endl;
 }
 
-Body* World::createBody(Fixture *f) {
-   void* mem = allocator.allocate(sizeof(Body));
-   Body* b = new Body(f);
+Body* World::createBody(Fixture *f, Vec2d pos) {
+    void* mem = allocator.allocate(sizeof(Body));
+    Body* b = new Body(f);
     std::cout << mem << std::endl;
+    b->next = bodyLink;
 
-   b->next = bodyLink;
-   if(b->next) {
-       b->next->last = b;
-   }
+    if(b->next) {
+        b->next->last = b;
+    }
 
-   bodyLink = b;
-   bodyCount++;
-   return b;
+    b->pos = pos;
+
+    bodyLink = b;
+    bodyCount++;
+
+    partitioner.insertBody(b);
+
+    return b;
 }
 
 double World::getTotalKE() const {

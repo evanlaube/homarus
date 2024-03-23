@@ -52,7 +52,7 @@ int main() {
     */
 
 
-    for(int i = 0; i < 600; i++) {
+    for(int i = 0; i < 500; i++) {
         float r = 4;//20 + ((float)rand()/RAND_MAX) * 15;
 
         float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
@@ -108,7 +108,6 @@ int main() {
     double totalRenderTime = 0;
 
     while(renderer.close == false) {
-        double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
         
         if(renderer.getFrameCount() % 60 == 0) {
             std::stringstream ss;
@@ -124,7 +123,9 @@ int main() {
         }
 
         double t = getTime() / (double)1000.0;
-        world.update(elapsed);
+        currentTime = getTime();
+        double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
+        world.step(elapsed, 1);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
@@ -134,7 +135,6 @@ int main() {
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 
         lastTime = currentTime;
-        currentTime = getTime();
     }
 
     return 0;

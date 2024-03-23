@@ -18,7 +18,8 @@ class World {
         Body* bodyLink = nullptr;
         int bodyCount = 0;
 
-        void update(float timestep);
+        void step(double timestep, int updates);
+        void update(double timestep);
         void updateBody(Body *b, float timestep);
         void collide(Body* a, Body* b, Collision c);
 

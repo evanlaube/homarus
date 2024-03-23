@@ -17,11 +17,16 @@ World::World() : partitioner(20, 20, 1080, 720) {
     gravity = Vec2d(0,0);
 }
 
-void World::update(float timestep) {
+void World::step(double timestep, int updates) {
+    for(int i = 0; i < updates; i++) {
+        update(timestep/updates);
+    }
+}
+
+void World::update(double timestep) {
     Body* b = bodyLink;
 
     while(b != nullptr) {
-        //updateBody(b, timestep);
         b->acc += gravity * timestep;
 
         if(b->getType() != BODY_STATIC) {
@@ -32,20 +37,14 @@ void World::update(float timestep) {
             b->vel.erase();
         }
         
-        Vec2d v = b->getPos();
         b = b->next;
     }
-
 
     partitioner.update(bodyLink);
 
     b = bodyLink;
     while(b != nullptr) {
         std::unordered_set<Body*> neighbors = partitioner.getNeighbors(b);
-
-        if(neighbors.size() > 0) {
-            //std::cout << neighbors.size() << std::endl;
-        }
 
         for(Body* collider : neighbors) {
             if(b == collider) {
@@ -57,7 +56,6 @@ void World::update(float timestep) {
             if(c.colliding) {
                 collide(b, collider, c);
             }
-
         }
 
         b = b->getNext();
@@ -65,8 +63,6 @@ void World::update(float timestep) {
 }
 
 void World::collide(Body *a, Body *b, Collision c) {
-    
-
     if(a->getType() == BODY_STATIC && b->getType() == BODY_STATIC)
         return;
 

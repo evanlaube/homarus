@@ -100,6 +100,17 @@ bool Circle::checkPolygonOverlap(Polygon *s) const {
     return false;
 }
 
+std::pair<Vec2d, Vec2d> Circle::getBoundingBox() const {
+    Vec2d pos = getPos();
+
+    double halfR = r/2;
+
+    Vec2d min = pos - Vec2d(halfR, halfR); 
+    Vec2d max = pos + Vec2d(halfR, halfR);
+
+    return {min, max};
+}
+
 Collision Circle::getCollision(Shape* s) const {
     return s->getCircleCollision((Circle*) this);
 }

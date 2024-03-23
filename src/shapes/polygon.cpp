@@ -52,7 +52,7 @@ Polygon::Polygon(std::vector<Vec2d> vertices) {
     for(int i = 0; i < this->vertices.size(); i++) {
         Vec2d v = this->vertices[i];
         this->vertices[i] = Vec2d(v.x - centroid.x, v.y-centroid.y);
-        std::cout << this->vertices[i] << std::endl;
+        //std::cout << this->vertices[i] << std::endl;
     }
     centroid = Vec2d(0,0);
 
@@ -66,8 +66,8 @@ Polygon::Polygon(std::vector<Vec2d> vertices) {
     }
     maxRadius = sqrt(maxDistSquare);
 
-    std::cout << "Area: " << area << std::endl;
-    std::cout << "Centroid: (" << centroid.x << ", " << centroid.y << ")" << std::endl;
+    //std::cout << "Area: " << area << std::endl;
+    //std::cout << "Centroid: (" << centroid.x << ", " << centroid.y << ")" << std::endl;
 }
 
 void Polygon::calcArea() {
@@ -78,8 +78,6 @@ void Polygon::calcArea() {
         Vec2d next = vertices[(i+1) % (vertices.size())];
 
         a += (vert.x * next.y) - (next.x * vert.y);
-
-        std::cout << vert << " -> " << next << std::endl;
     }
 
     a /= 2;
@@ -173,6 +171,30 @@ bool Polygon::checkPolygonOverlap(Polygon *s) const {
     }
 
     return false;
+}
+
+std::pair<Vec2d, Vec2d> Polygon::getBoundingBox() const {
+
+    double minX = vertices[0].x;
+    double minY = vertices[0].y;
+    double maxX = vertices[0].x;
+    double maxY = vertices[0].y;
+
+    for(Vec2d v : vertices) {
+        if(v.x < minX) {
+            minX = v.x;
+        } else if (v.x > maxX) {
+            maxX = v.x;
+        }
+
+        if(v.y < minY) {
+            minY = v.y;
+        } else if(v.y > maxY) {
+            maxY = v.y;
+        }
+    }
+
+    return {getPos() + Vec2d(minX, minY), getPos() + Vec2d(maxX, maxY)};
 }
 
 void Polygon::rotateVertices(float theta) {

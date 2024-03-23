@@ -36,6 +36,7 @@ class Shape {
         virtual bool checkOverlap(Shape *s)  const = 0;
         virtual bool checkCircleOverlap(Circle *s) const = 0;
         virtual bool checkPolygonOverlap(Polygon *s) const = 0;
+        virtual std::pair<Vec2d, Vec2d> getBoundingBox() const = 0;
 
         virtual Collision getCollision(Shape *s)  const = 0;
         virtual Collision getCircleCollision(Circle *s) const = 0;

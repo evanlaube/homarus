@@ -26,6 +26,7 @@ class Polygon : public Shape {
         bool checkOverlap(Shape *s) const override;
         bool checkCircleOverlap(Circle *s) const override;
         bool checkPolygonOverlap(Polygon *s) const override;
+        std::pair<Vec2d, Vec2d> getBoundingBox() const override;
 
         Collision getCollision(Shape *s)  const override;
         Collision getCircleCollision(Circle *s) const override;

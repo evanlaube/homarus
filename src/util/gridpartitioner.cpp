@@ -2,6 +2,7 @@
 #include "gridpartitioner.h"
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 #include <unordered_set>
 
 GridPartitioner::GridPartitioner(int sizeX, int sizeY, int width, int height) {
@@ -29,7 +30,27 @@ void GridPartitioner::insertBody(Body* b) {
         return;
     }
 
-    grid[cell.first][cell.second].insert(b);
+    if(b->getShape()->getMaxRadius() > std::max(width/gridSizeX, height/gridSizeY)) {
+        std::pair<Vec2d, Vec2d> boundingBox = b->getShape()->getBoundingBox();
+
+        Vec2d minPos = boundingBox.first;
+        Vec2d maxPos = boundingBox.second;
+        std::pair<int, int> minGridCell = getGridIndex(minPos.x, minPos.y);
+        std::pair<int, int> maxGridCell = getGridIndex(maxPos.x, maxPos.y);
+
+        int minX = minGridCell.first;
+        int minY = minGridCell.second;
+        int maxX = maxGridCell.first;
+        int maxY = maxGridCell.second;
+
+        for(int i = minX; i <= maxX; i++) {
+            for(int j = minY; j <= maxY; j++) {
+                grid[i][j].insert(b);
+            }
+        }
+    } else {
+        grid[cell.first][cell.second].insert(b);
+    }
 }
 
 void GridPartitioner::removeBody(Body* b) {
@@ -101,6 +122,9 @@ std::unordered_set<Body*> GridPartitioner::getNeighbors(Body* b) const {
                 continue;
 
             for(Body* neighborBody : grid[i][j]) {
+                if(neighborBody == b) {
+                    continue;
+                }
                 neighbors.insert(neighborBody);
             }
         }

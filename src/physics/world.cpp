@@ -12,8 +12,8 @@
 // TODO: Make grid partitioner support infinite size
 // For now initialize width and height values
 // TODO: Make grid partitioner assume best size for the grid
-// For now just use 20 subdivisions?
-World::World() : partitioner(20, 20, 1080, 720) {
+// For now just use 60 subdivisions?
+World::World() : partitioner(120, 120, 1080, 720) {
     gravity = Vec2d(0,0);
 }
 
@@ -27,14 +27,13 @@ void World::update(double timestep) {
     Body* b = bodyLink;
 
     while(b != nullptr) {
-        b->acc += gravity * timestep;
-
         if(b->getType() != BODY_STATIC) {
-            b->pos = b->pos +  (b->vel * timestep);
-            b->vel = b->vel + (b->acc * timestep);
+            b->pos += (b->vel * timestep);
+            b->vel += (b->acc * timestep);
+            b->vel += gravity * timestep;
             b->acc.erase();
         } else {
-            b->vel.erase();
+            b->acc.erase();
         }
         
         b = b->next;

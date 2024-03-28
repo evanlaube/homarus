@@ -14,6 +14,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -25,35 +26,31 @@ uint64_t getTime() {
 }
 
 int main() {
+    srand(time(NULL));
+        
     World world;
-    world.setGravity(0, 9800);
+    world.setGravity(0, 980);
     
     Renderer renderer = Renderer(&world);
 
     renderer.init();
 
-    // Simple test of Shape::calcArea and Shape::calcCentroid using a square
-    //  Steps for creating a new body: 
-    //      1. Create empty body with world
-    //      2. Create a shape of some kind
-    //      3. Create a fixture and attach the shape
-    //      4. Attach fixture to body
-    //      5. Set a position and angle to the body
+    std::vector<Vec2d> verts;
+    verts.push_back(Vec2d(0, 0));
+    verts.push_back(Vec2d(75, 75));
+    verts.push_back(Vec2d(150, 0));
+    verts.push_back(Vec2d(75,-75));
+
+    Polygon *s2 = new Polygon(verts);
+    Fixture *f2 = new Fixture(s2);
+    Body* b2 = world.createBody(f2, Vec2d(300, 100));
+    b2->setMass(75*75 / 2);
+    // b2->rotate(M_PI/3);
+    b2->setType(BODY_DYMANIC);
+    world.partitioner.getNeighbors(b2);
     
-    /*
-    Circle c = Circle(50);
-    Fixture* f = new Fixture(&c);
-    Body* b1 = world.createBody(f);
-    b1->setPos(Vec2d(540, 360));
-    b1->setVel(Vec2d(0, 0));
-    b1->setMass((25*25));
-    b1->rotate(M_PI/4);
-    b1->setType(BODY_DYMANIC); 
-    */
-
-
-    for(int i = 0; i < 500; i++) {
-        float r = 4;//20 + ((float)rand()/RAND_MAX) * 15;
+    for(int i = 0; i < 1500; i++) {
+        float r = 3.5;//20 + ((float)rand()/RAND_MAX) * 15;
 
         float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
         float y = 20 + r + ((float)rand()/RAND_MAX) * (720-r-40);
@@ -62,7 +59,7 @@ int main() {
         Fixture* f = new Fixture(&c);
         Body* b1 = world.createBody(f, Vec2d(x,y));
         b1->setVel(Vec2d(200 - ((float)rand()/RAND_MAX) * 400, 200 - ((float)rand()/RAND_MAX) * 400));
-        b1->setMass(r*r*3.14);
+        b1->setMass(r*r*3.14*2); // Twice as much as unit density
         b1->setType(BODY_DYMANIC);
     }
 
@@ -76,12 +73,12 @@ int main() {
     Fixture* topFloorFixture = new Fixture(&topFloorShape);
     Body* s = world.createBody(topFloorFixture, Vec2d(540, -40));
     s->setType(BODY_STATIC);
-    s->rotate(0.00001); // To prevent having 0 or infinite slope
+    s->rotate(0.001); // To prevent having 0 or infinite slope
 
     Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
     Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
     bottomFloor->setType(BODY_STATIC);
-    bottomFloor->rotate(0.00001);
+    bottomFloor->rotate(0.001);
 
     std::vector<Vec2d> wallVerts;
     wallVerts.push_back(Vec2d(0, 10));
@@ -93,12 +90,12 @@ int main() {
     Fixture* leftWallFixture = new Fixture(&wallShape);
     Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
     leftWall->setType(BODY_STATIC);
-    leftWall->rotate(0.00001);
+    leftWall->rotate(0.0001);
 
     Fixture* rightWallFixture = new Fixture(&wallShape);
     Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
     rightWall->setType(BODY_STATIC);
-    rightWall->rotate(0.00001);
+    rightWall->rotate(0.0001);
 
 
     uint64_t currentTime = getTime();
@@ -125,7 +122,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.step(elapsed, 1);
+        world.step(0.004/* elapsed */, 2);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 

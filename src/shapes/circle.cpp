@@ -154,7 +154,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
     Vec2d intersect;
 
     for(Vec2d v : verts) { 
-        v = v + s->getPos();
+        v += s->getPos();
 
         if(pointInside(v)) {
             Vec2d diff = v - getPos();
@@ -199,7 +199,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
         double yInt = mLine * (xInt - v1.x) + v1.y;
         intersect = Vec2d(xInt, yInt);
         //std::cout << "Intersect at: " << intersect << std::endl;
-       
+        //
         if(pointInside(intersect)) {
             double a = 1 + mPerp * mPerp;
             double b = -2*getPos().x - 2 * mPerp * mPerp * getPos().x;
@@ -217,7 +217,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
                 tangent = Vec2d(1, mLine).norm();
                 return Collision(overlap, tangent, intersect);
             } else {
-                double x2 = (-b - sqrt(b*b - 4*a*c) ) / (2*a);
+                double x2 = (-b - sqrt(b*b - 4*a*c)) / (2*a);
                 double y2 = mPerp * (x2 - getPos().x) + getPos().y;
                 if(s->pointInside(Vec2d(x2, y2))) {
                     overlapPoint = Vec2d(x2, y2);

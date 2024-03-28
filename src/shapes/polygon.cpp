@@ -215,11 +215,17 @@ void Polygon::rotateVertices(float theta) {
 }
 
 Collision Polygon::getCollision(Shape *s) const {
+    
     return s->getPolygonCollision((Polygon*)this);
 }
 
 Collision Polygon::getCircleCollision(Circle* c) const {
-    return c->getPolygonCollision((Polygon*) this);
+    Collision collision = c->getPolygonCollision((Polygon*) this);
+
+    Collision c2(collision.overlap * -1, collision.tangent, collision.intersection);
+    c2.colliding = collision.colliding;
+    
+    return c2; 
 }
 
 Collision Polygon::getPolygonCollision(Polygon* s) const {
@@ -277,7 +283,7 @@ Collision Polygon::getPolygonCollision(Polygon* s) const {
        v1 = v2;
     }
 
-    Vec2d overlap = closestEdgePoint - point;
+    Vec2d overlap = point - closestEdgePoint;
     Vec2d tangent = Vec2d(1, intersectTangent).norm();
     return Collision(overlap, tangent, closestEdgePoint);
 }

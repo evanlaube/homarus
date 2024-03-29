@@ -13,8 +13,6 @@
 #include <math.h>
 #include <iostream>
 
-#define GIF_EXPORT
-
 Renderer::Renderer(World *w) {
     world = w;
     width = 1080;

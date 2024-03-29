@@ -19,6 +19,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../lib/gif.h"
+
 uint64_t getTime() {
     // Return integer of miliseconds since epoch
     using namespace std::chrono;
@@ -29,27 +31,32 @@ int main() {
     srand(time(NULL));
         
     World world;
-    world.setGravity(0, 980);
+    world.setGravity(0, 75);
     
     Renderer renderer = Renderer(&world);
 
     renderer.init();
 
-    std::vector<Vec2d> verts;
-    verts.push_back(Vec2d(0, 0));
-    verts.push_back(Vec2d(75, 75));
-    verts.push_back(Vec2d(150, 0));
-    verts.push_back(Vec2d(75,-75));
+    //std::vector<Vec2d> verts;
+    //verts.push_back(Vec2d(0, 0));
+    //verts.push_back(Vec2d(75, 75));
+    //verts.push_back(Vec2d(150, 0));
+    //verts.push_back(Vec2d(75,-75));
 
-    Polygon *s2 = new Polygon(verts);
-    Fixture *f2 = new Fixture(s2);
-    Body* b2 = world.createBody(f2, Vec2d(300, 100));
-    b2->setMass(75*75 / 2);
-    // b2->rotate(M_PI/3);
-    b2->setType(BODY_DYMANIC);
-    world.partitioner.getNeighbors(b2);
+    //Polygon *s2 = new Polygon(verts);
+    //Fixture *f2 = new Fixture(s2);
+    //Body* b2 = world.createBody(f2, Vec2d(300, 100));
+    //b2->setMass(75*75 / 2);
+    //// b2->rotate(M_PI/3);
+    //b2->setType(BODY_DYMANIC);
     
-    for(int i = 0; i < 1500; i++) {
+    Circle *circle = new Circle(50);
+    Fixture *fix = new Fixture(circle);
+    Body *circleBody = world.createBody(fix, Vec2d(540, 260));
+    circleBody->setMass(50*50*M_PI/2.5); // One half (ish) unit density
+    circleBody->setType(BODY_DYMANIC);
+
+    for(int i = 0; i < 2500; i++) {
         float r = 3.5;//20 + ((float)rand()/RAND_MAX) * 15;
 
         float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
@@ -58,7 +65,7 @@ int main() {
         Circle c(r);
         Fixture* f = new Fixture(&c);
         Body* b1 = world.createBody(f, Vec2d(x,y));
-        b1->setVel(Vec2d(200 - ((float)rand()/RAND_MAX) * 400, 200 - ((float)rand()/RAND_MAX) * 400));
+        b1->setVel(Vec2d((200 - ((float)rand()/RAND_MAX) * 400)*1, (200 - ((float)rand()/RAND_MAX) * 400)*1));
         b1->setMass(r*r*3.14*2); // Twice as much as unit density
         b1->setType(BODY_DYMANIC);
     }
@@ -104,6 +111,9 @@ int main() {
     double totalUpdateTime = 0;
     double totalRenderTime = 0;
 
+    GifWriter gifWriter;
+    GifBegin(&gifWriter, "output.gif", 1080, 720, 2); // Adjust the frame rate as needed
+
     while(renderer.close == false) {
         
         if(renderer.getFrameCount() % 60 == 0) {
@@ -122,7 +132,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.step(0.004/* elapsed */, 2);
+        world.step(0.008 * (120.0 / 50.0) /* elapsed */, 4);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
@@ -131,8 +141,20 @@ int main() {
         renderer.update();
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 
+#ifdef GIF_EXPORT // defined in renderer.h
+        if(renderer.getFrameCount() > 30*60/60 && renderer.getFrameCount() < 2*30*60/60) {
+            std::vector<uint8_t> pixels(renderer.width * renderer.height * 4); // Assuming RGBA format
+            glReadPixels(0, 0, renderer.width, renderer.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+            GifWriteFrame(&gifWriter, pixels.data(), renderer.width, renderer.height, 2); // Adjust the frame delay as needed
+        } else if(renderer.getFrameCount() > 2*30*60) {
+            break;
+        }
+#endif
+
         lastTime = currentTime;
     }
+
+    GifEnd(&gifWriter);
 
     return 0;
 }

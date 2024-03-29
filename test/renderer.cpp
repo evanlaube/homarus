@@ -13,6 +13,8 @@
 #include <math.h>
 #include <iostream>
 
+#define GIF_EXPORT
+
 Renderer::Renderer(World *w) {
     world = w;
     width = 1080;
@@ -26,6 +28,10 @@ int Renderer::init() {
     } else {
         std::cout << "GLFW Initialized - Version: " << glfwGetVersionString() << std::endl;
     }
+
+#ifdef GIF_EXPORT
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE); 
+#endif
 
     window = glfwCreateWindow(width, height, "Homarus Test", NULL, NULL);
 
@@ -128,13 +134,34 @@ void Renderer::drawShape(Polygon *p, float x, float y, float a) {
 void Renderer::drawBodies() {
     Body* b = world->bodyLink;
 
+    int outOfBounds = 0;
+
     if(b == nullptr)
         return;
-
     do {
         drawBody(b);
+
+        if(b->getPos().y > 1000) {
+            outOfBounds++;
+        }
+
         b = b->getNext();
     } while(b != nullptr);
+
+    if(outOfBounds > 0) {
+        std::cout << "Total Bodies out of bounds: " << outOfBounds << std::endl;
+    }
+}
+
+void Renderer::saveImage(const char* path) {
+}
+
+float Renderer::getScalingFactor() const {
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    return static_cast<float>(fbWidth) / width;
 }
 
 void Renderer::drawBody(Body *b) {

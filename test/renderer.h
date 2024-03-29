@@ -30,7 +30,11 @@ class Renderer {
         void setTitle(const char* title);
         void displayFps();
 
+        void saveImage(const char* path);
+
         uint32_t getFrameCount() { return frameCount; }
+
+        float getScalingFactor() const;
 
         void drawShape(Shape *s, float x, float y, float a);
         void drawShape(Circle *c, float x, float y, float a);

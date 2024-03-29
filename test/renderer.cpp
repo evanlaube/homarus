@@ -82,10 +82,10 @@ void Renderer::drawCircle(float x, float y, float r, int triCount) {
     glBegin(GL_TRIANGLE_FAN);
 
     glVertex2f(x, y);
-    
+
     for(int i = 0; i <= triCount; i++) {
-        int cx = r * cosf(i * (M_PI*2) / triCount);
-        int cy = r * sinf(i * (M_PI*2) / triCount);
+        float cx = r * cosf(i * (M_PI*2) / triCount);
+        float cy = r * sinf(i * (M_PI*2) / triCount);
 
         glVertex2f(x+cx, y+cy);
     }
@@ -94,9 +94,6 @@ void Renderer::drawCircle(float x, float y, float r, int triCount) {
 }
 
 void Renderer::drawShape(Shape *s, float x, float y, float a) {
-    //std::cout << "ERROR: Unknown shape passed into Renderer::drawShape()" << std::endl;
-    // TODO: Check what type of shape is passed and draw it
-
     if(s->getType() == TYPE_CIRCLE) {
         Circle *c = dynamic_cast<Circle*>(s);
         drawCircle(x, y, c->getRadius(), 32);

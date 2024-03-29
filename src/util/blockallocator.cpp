@@ -48,7 +48,7 @@ BlockAllocator::~BlockAllocator() {
 }
 
 void* BlockAllocator::allocate(int size) {
-    std::cout << "Allocating with size of " << size << std::endl;
+    //std::cout << "Allocating with size of " << size << std::endl;
     if(size == 0) {
         return nullptr;
     }
@@ -67,7 +67,7 @@ void* BlockAllocator::allocate(int size) {
         for(int i = 0; i < chunkBlockCount-1; i++) {
             Block* b = (Block*) ((int8_t*)c->blocks + blockSize * i);
             Block* next = (Block*) ((int8_t*)c->blocks + blockSize * (i+1));
-            std::cout << "Chunk: " << c << " | Block : " << b << " | Next: " << next << " | Block-Next: " << (int8_t*)next-(int8_t*)b << std::endl;
+            //std::cout << "Chunk: " << c << " | Block : " << b << " | Next: " << next << " | Block-Next: " << (int8_t*)next-(int8_t*)b << std::endl;
             b->next = next;
         }
         c->blocks[chunkBlockCount-1].next = nullptr;

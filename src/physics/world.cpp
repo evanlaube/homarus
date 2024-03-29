@@ -140,7 +140,6 @@ void World::collide(Body *a, Body *b, Collision c) {
 Body* World::createBody(Fixture *f, Vec2d pos) {
     void* mem = allocator.allocate(sizeof(Body));
     Body* b = new Body(f);
-    std::cout << mem << std::endl;
     b->next = bodyLink;
 
     if(b->next) {

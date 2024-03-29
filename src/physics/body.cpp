@@ -24,10 +24,8 @@ Body::Body(Fixture *f) {
 }
 
 void Body::setFixture(Fixture *f) {
-    std::cout << "Fixture: " << f->getShape()->getType() << std::endl;
     if(f->attach(this)) {
         fixture = Fixture(*f);
-        std::cout << fixture.getShape()->getType() << std::endl;
     } else {
         throw std::runtime_error("ERROR: Fixture already attached - cannot be reused");
     }

@@ -103,10 +103,8 @@ bool Circle::checkPolygonOverlap(Polygon *s) const {
 std::pair<Vec2d, Vec2d> Circle::getBoundingBox() const {
     Vec2d pos = getPos();
 
-    double halfR = r/2;
-
-    Vec2d min = pos - Vec2d(halfR, halfR); 
-    Vec2d max = pos + Vec2d(halfR, halfR);
+    Vec2d min = pos - Vec2d(r, r); 
+    Vec2d max = pos + Vec2d(r, r);
 
     return {min, max};
 }

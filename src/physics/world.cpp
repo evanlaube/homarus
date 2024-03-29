@@ -10,10 +10,11 @@
 
 
 // TODO: Make grid partitioner support infinite size
+//   Achieve this by getting the average size of all bodies and setting grid size to that.
 // For now initialize width and height values
 // TODO: Make grid partitioner assume best size for the grid
-// For now just use 60 subdivisions?
-World::World() : partitioner(120, 120, 1080, 720) {
+// For now just use 200 subdivisions?
+World::World() : partitioner(200, 200, 1080, 720) {
     gravity = Vec2d(0,0);
 }
 

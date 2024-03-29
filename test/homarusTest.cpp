@@ -1,3 +1,5 @@
+// #define GIF_EXPORT
+
 #include <chrono>
 #include <cstdint>
 
@@ -31,7 +33,7 @@ int main() {
     srand(time(NULL));
         
     World world;
-    world.setGravity(0, 75);
+    world.setGravity(0, 100);
     
     Renderer renderer = Renderer(&world);
 
@@ -56,7 +58,7 @@ int main() {
     circleBody->setMass(50*50*M_PI/2.5); // One half (ish) unit density
     circleBody->setType(BODY_DYMANIC);
 
-    for(int i = 0; i < 2500; i++) {
+    for(int i = 0; i < 3000; i++) {
         float r = 3.5;//20 + ((float)rand()/RAND_MAX) * 15;
 
         float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
@@ -132,7 +134,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.step(0.008 * (120.0 / 50.0) /* elapsed */, 4);
+        world.step(elapsed, 2);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
@@ -142,7 +144,7 @@ int main() {
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 
 #ifdef GIF_EXPORT // defined in renderer.h
-        if(renderer.getFrameCount() > 30*60/60 && renderer.getFrameCount() < 2*30*60/60) {
+        if(renderer.getFrameCount() > 30*60 && renderer.getFrameCount() < 2*30*60) {
             std::vector<uint8_t> pixels(renderer.width * renderer.height * 4); // Assuming RGBA format
             glReadPixels(0, 0, renderer.width, renderer.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
             GifWriteFrame(&gifWriter, pixels.data(), renderer.width, renderer.height, 2); // Adjust the frame delay as needed

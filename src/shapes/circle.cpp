@@ -5,6 +5,7 @@
 #include "circle.h"
 #include "polygon.h"
 #include "../util/vec2.h"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -28,7 +29,7 @@ void Circle::calcCentroid() {
 bool Circle::pointInside(Vec2d point) const {
     Vec2d diff = getPos() - point;
     // Return true if x^2 + y^2 < r^2
-    return pow(diff.x, 2) + pow(diff.y, 2) < pow(r, 2);
+    return pow(diff.x, 2) + pow(diff.y, 2) <= pow(r, 2);
 
 }
 
@@ -77,7 +78,7 @@ bool Circle::checkPolygonOverlap(Polygon *s) const {
 
         // TODO: Special conditions for vertical and zero slope
         float mLine = (v2.y - v1.y) / (v2.x - v1.x);
-        float mPerp = (v2.x - v1.x) / (v1.y - v2.y);
+        float mPerp = (v2.x - v1.x) / (v1.y - v2.y); 
         
         // x-value of intersection of edge and line perpendicular to edge that 
         // crosses through the center of the circle.
@@ -180,58 +181,116 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
         }
     }
 
-    // TODO: Overlap calculation using edges still is not entirely accurate,
-    // but it works well enough to prevent bodies with restitution from 
-    // phasing through eachother.
     Vec2d v1 = s->getPos() + verts[0];
     for(int i = 1; i <= verts.size(); i++) {
         Vec2d v2 = s->getPos() + verts[i%verts.size()];
         
-        // TODO: Special conditions for vertical and zero slope
         double mLine = (v2.y - v1.y) / (v2.x - v1.x);
         double mPerp = (v2.x - v1.x) / (v1.y - v2.y);
-        
-        // x-value of intersection of edge and line perpendicular to edge that 
-        // crosses through the center of the circle.
-        double xInt = ((mLine * v1.x) - (mPerp * getPos().x) + getPos().y - v1.y) / (mLine - mPerp);
-        double yInt = mLine * (xInt - v1.x) + v1.y;
-        intersect = Vec2d(xInt, yInt);
-        //std::cout << "Intersect at: " << intersect << std::endl;
-        //
-        if(pointInside(intersect)) {
-            double a = 1 + mPerp * mPerp;
-            double b = -2*getPos().x - 2 * mPerp * mPerp * getPos().x;
-            double c = getPos().x * getPos().x + mPerp * mPerp * getPos().x * getPos().x - r*r;
-           
-            double x1 = (-b + sqrt(b*b - 4*a*c) ) / (2*a);
-            double y1 = mPerp * (x1 - getPos().x) + getPos().y;
-            Vec2d overlapPoint;
 
-            if(s->pointInside(Vec2d(x1, y1))) {
-                overlapPoint = Vec2d(x1, y1);
-                overlap = (overlapPoint - intersect);
-                if(overlap.x == 0 && overlap.y == 0)
-                    return Collision();
-                tangent = Vec2d(1, mLine).norm();
+        if(v1.x == v2.x) {
+            double xInt = v1.x; // because v1.x == v2.x
+            double yInt = getPos().y; 
+            
+            intersect = Vec2d(xInt, yInt);
+            
+            if(yInt > std::max(v1.y, v2.y) || xInt < std::min(v2.y, v1.y)) {
+                v1 = v2;
+                continue;
+            }
+
+            if(pointInside(intersect)) {
+                double x = getPos().x - r;
+                double y = getPos().y;
+                Vec2d overlapPoint = Vec2d(x, y);
+            
+
+                if(s->pointInside(overlapPoint)) {
+                    overlap = (overlapPoint - intersect);
+                } else {
+                    x = getPos().x + r;
+                    overlapPoint.x = x;
+
+                        overlap = (overlapPoint - intersect);
+                }
+
+                tangent = Vec2d(0, 1);
                 return Collision(overlap, tangent, intersect);
+            }
+
+        } else if (v1.y == v2.y) {
+            double yInt = v1.y; // Because v1.y == v2.y
+            double xInt = getPos().x; 
+
+            intersect = Vec2d(xInt, yInt);
+
+            if(xInt > std::max(v1.x, v2.x) || xInt < std::min(v2.x, v1.x)) {
+        v1 = v2;
+                continue;
             } else {
-                double x2 = (-b - sqrt(b*b - 4*a*c)) / (2*a);
-                double y2 = mPerp * (x2 - getPos().x) + getPos().y;
-                if(s->pointInside(Vec2d(x2, y2))) {
-                    overlapPoint = Vec2d(x2, y2);
+            }
+
+            if(pointInside(intersect)) {
+                double x = getPos().x;
+                double y = getPos().y - r;
+                Vec2d overlapPoint = Vec2d(x, y);
+
+                if(s->pointInside(overlapPoint)) {
+                    overlap = (overlapPoint - intersect);
+                } else {
+                    y = getPos().y + r;
+                    overlapPoint.y = y;
+                    overlap = (overlapPoint - intersect);
+                }
+
+                tangent = Vec2d(1, 0);
+                return Collision(overlap, tangent, intersect);
+            }
+
+        } else {
+            // x-value of intersection of edge and line perpendicular to edge that 
+            // crosses through the center of the circle.
+            double xInt = ((mLine * v1.x) - (mPerp * getPos().x) + getPos().y - v1.y) / (mLine - mPerp);
+            double yInt = mLine * (xInt - v1.x) + v1.y;
+            intersect = Vec2d(xInt, yInt);
+
+            if(pointInside(intersect)) {
+                double a = 1 + mPerp * mPerp;
+                double b = -2*getPos().x - 2 * mPerp * mPerp * getPos().x;
+                double c = getPos().x * getPos().x + mPerp * mPerp * getPos().x * getPos().x - r*r;
+
+                double x1 = (-b + sqrt(b*b - 4*a*c) ) / (2*a);
+                double y1 = mPerp * (x1 - getPos().x) + getPos().y;
+                Vec2d overlapPoint;
+
+                if(s->pointInside(Vec2d(x1, y1))) {
+                    overlapPoint = Vec2d(x1, y1);
                     overlap = (overlapPoint - intersect);
                     if(overlap.x == 0 && overlap.y == 0)
                         return Collision();
                     tangent = Vec2d(1, mLine).norm();
                     return Collision(overlap, tangent, intersect);
+                } else {
+                    double x2 = (-b - sqrt(b*b - 4*a*c)) / (2*a);
+                    double y2 = mPerp * (x2 - getPos().x) + getPos().y;
+                    if(s->pointInside(Vec2d(x2, y2))) {
+                        overlapPoint = Vec2d(x2, y2);
+                        overlap = (overlapPoint - intersect);
+                        if(overlap.x == 0 && overlap.y == 0)
+                            return Collision();
+                        tangent = Vec2d(1, mLine).norm();
+                        return Collision(overlap, tangent, intersect);
+                    }
                 }
-            }
 
+            }
         }
+        
+        //std::cout << "Intersect at: " << intersect << std::endl;
+        //
 
 
         v1 = v2;
     }
-
     return Collision();
 }

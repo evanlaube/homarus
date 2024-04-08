@@ -47,27 +47,32 @@ int main() {
 
     //Polygon *s2 = new Polygon(verts);
     //Fixture *f2 = new Fixture(s2);
-    //Body* b2 = world.createBody(f2, Vec2d(300, 100));
+    //Body* b2 = world.createBody(f2, Vec2d(300, 90));
     //b2->setMass(75*75 / 2);
+    //b2->setVel(Vec2d(1000, 0));
     //// b2->rotate(M_PI/3);
     //b2->setType(BODY_DYMANIC);
     
-    Circle *circle = new Circle(50);
+    Circle *circle = new Circle(55);
     Fixture *fix = new Fixture(circle);
-    Body *circleBody = world.createBody(fix, Vec2d(540, 260));
+    Body *circleBody = world.createBody(fix, Vec2d(400, 400));
     circleBody->setMass(50*50*M_PI/2.5); // One half (ish) unit density
     circleBody->setType(BODY_DYMANIC);
 
-    for(int i = 0; i < 3000; i++) {
+    for(int i = 0; i < 3001; i++) {
         float r = 3.5;//20 + ((float)rand()/RAND_MAX) * 15;
 
         float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
         float y = 20 + r + ((float)rand()/RAND_MAX) * (720-r-40);
+        
+        //float x = 540;
+        //float y = 358;
 
         Circle c(r);
         Fixture* f = new Fixture(&c);
         Body* b1 = world.createBody(f, Vec2d(x,y));
         b1->setVel(Vec2d((200 - ((float)rand()/RAND_MAX) * 400)*1, (200 - ((float)rand()/RAND_MAX) * 400)*1));
+        //b1->setVel(Vec2d(540/0.25, -360/0.25));
         b1->setMass(r*r*3.14*2); // Twice as much as unit density
         b1->setType(BODY_DYMANIC);
     }
@@ -87,7 +92,7 @@ int main() {
     Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
     Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
     bottomFloor->setType(BODY_STATIC);
-    bottomFloor->rotate(0.001);
+    //bottomFloor->rotate(0.001);
 
     std::vector<Vec2d> wallVerts;
     wallVerts.push_back(Vec2d(0, 10));
@@ -99,12 +104,12 @@ int main() {
     Fixture* leftWallFixture = new Fixture(&wallShape);
     Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
     leftWall->setType(BODY_STATIC);
-    leftWall->rotate(0.0001);
+    //leftWall->rotate(0.0001);
 
     Fixture* rightWallFixture = new Fixture(&wallShape);
     Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
     rightWall->setType(BODY_STATIC);
-    rightWall->rotate(0.0001);
+    //rightWall->rotate(0.0001);
 
 
     uint64_t currentTime = getTime();
@@ -113,8 +118,10 @@ int main() {
     double totalUpdateTime = 0;
     double totalRenderTime = 0;
 
+#ifdef GIF_EXPORT
     GifWriter gifWriter;
     GifBegin(&gifWriter, "output.gif", 1080, 720, 2); // Adjust the frame rate as needed
+#endif
 
     while(renderer.close == false) {
         
@@ -134,7 +141,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.step(elapsed, 2);
+        world.step(0.008, 2);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
@@ -156,7 +163,9 @@ int main() {
         lastTime = currentTime;
     }
 
+#ifdef GIF_EXPORT
     GifEnd(&gifWriter);
+#endif
 
     return 0;
 }

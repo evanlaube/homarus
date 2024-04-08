@@ -120,11 +120,11 @@ bool Polygon::pointInside(Vec2d p) const {
         v2 = v2 + getPos();
 
         //std::cout << "p.y: " << p.y << " | Max: " << std::max(v1.y, v2.y) << " | Min: " << std::min(v1.y, v2.y) << std::endl;
-        if(p.y >= std::min(v1.y, v2.y) && p.y <= std::max(v1.y, v2.y)) {
-            if(p.x <= std::max(v1.x, v2.x)) {
+        if(p.y > std::min(v1.y, v2.y) && p.y <= std::max(v1.y, v2.y)) {
+            if(p.x < std::max(v1.x, v2.x)) {
                 float xIntersect = ((p.y-v1.y) * (v2.x - v1.x)) / (v2.y - v1.y) + v1.x;
 
-                if(p.x <= xIntersect) {
+                if(p.x < xIntersect) {
                     intersects++;
                 }
             }
@@ -134,7 +134,7 @@ bool Polygon::pointInside(Vec2d p) const {
     }
    
     // Return true if a ray being traced to the right intersects an odd number of edges of the polygon
-    return intersects % 2;
+    return intersects % 2 && intersects != 0;
 }
 
 bool Polygon::checkOverlap(Shape *s) const {
@@ -260,16 +260,28 @@ Collision Polygon::getPolygonCollision(Polygon* s) const {
     double leastDistSquare = -1;
 
     double intersectTangent;
+    std::pair<Vec2d, Vec2d> line;
+
+    double mLine;
+    double mPerp;
 
     Vec2d v1 = container->getVertices()[0] + container->getPos();
     for(int i = 1; i <= container->getVertices().size(); i++) {
        Vec2d v2 = container->getVertices()[i%container->getVertices().size()] + container->getPos(); 
 
-       double mLine = (v2.y - v1.y) / (v2.x - v1.x);
-       double mPerp = (v1.x - v2.x) / (v2.y - v1.y);
+       mLine = (v2.y - v1.y) / (v2.x - v1.x);
+       mPerp = (v1.x - v2.x) / (v2.y - v1.y);
     
        double xInt = (v1.y - point.y - mLine*v1.x + mPerp*point.x) / (mPerp - mLine);
        double yInt = mPerp * (xInt - point.x) + point.y;
+
+       if(v2.y == v1.y) { // Segment is horizontal
+           xInt = v2.x;
+           yInt = point.y;
+       } else if (v2.x == v1.x) { // Segment is vertical
+           xInt = point.x;
+           yInt = v2.y;
+       }
 
        Vec2d intersect = Vec2d(xInt, yInt);
        double distSquare = (point - intersect).magSquared();
@@ -277,13 +289,25 @@ Collision Polygon::getPolygonCollision(Polygon* s) const {
        if(distSquare < leastDistSquare || leastDistSquare == -1) {
            leastDistSquare = distSquare;
            closestEdgePoint = intersect;
-            intersectTangent = mLine;
+           intersectTangent = mLine;
+
+           line.first = v1;
+           line.second = v2;
        }
 
        v1 = v2;
     }
 
+    Vec2d tangent;
+
+    if(line.first.y == line.second.y) { // v1.x == v2.x
+        tangent = Vec2d(0, 1);
+    } else if (line.first.x == line.second.x) { // v1.y == v2.y
+        tangent = Vec2d(1, 0);
+    } else {
+        tangent = Vec2d(1, intersectTangent).norm();
+    }
+
     Vec2d overlap = point - closestEdgePoint;
-    Vec2d tangent = Vec2d(1, intersectTangent).norm();
     return Collision(overlap, tangent, closestEdgePoint);
 }

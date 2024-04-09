@@ -52,7 +52,7 @@ class Body {
         Body* next;
         Body* last;
 
-        short type = BODY_DYMANIC;
+        short type = BODY_DYNAMIC;
 };
 
 #endif // !BODY_H

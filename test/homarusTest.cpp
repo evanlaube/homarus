@@ -57,7 +57,7 @@ int main() {
     Fixture *fix = new Fixture(circle);
     Body *circleBody = world.createBody(fix, Vec2d(400, 400));
     circleBody->setMass(50*50*M_PI/2.5); // One half (ish) unit density
-    circleBody->setType(BODY_DYMANIC);
+    circleBody->setType(BODY_DYNAMIC);
 
     for(int i = 0; i < 3001; i++) {
         float r = 3.5;//20 + ((float)rand()/RAND_MAX) * 15;
@@ -74,7 +74,7 @@ int main() {
         b1->setVel(Vec2d((200 - ((float)rand()/RAND_MAX) * 400)*1, (200 - ((float)rand()/RAND_MAX) * 400)*1));
         //b1->setVel(Vec2d(540/0.25, -360/0.25));
         b1->setMass(r*r*3.14*2); // Twice as much as unit density
-        b1->setType(BODY_DYMANIC);
+        b1->setType(BODY_DYNAMIC);
     }
 
     std::vector<Vec2d> floorVerts;

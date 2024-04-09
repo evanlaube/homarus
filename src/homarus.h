@@ -7,6 +7,6 @@
 #define TYPE_POLYGON 2
 
 #define BODY_STATIC 0
-#define BODY_DYMANIC 1
+#define BODY_DYNAMIC 1
 
 #endif

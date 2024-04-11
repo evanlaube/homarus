@@ -24,7 +24,11 @@ Vec2d Shape::getPos() const {
     return fixture->getBody()->getPos();
 }
 
-float Shape::getAngle() {
+float Shape::getAngle() const {
     return fixture->getBody()->getAngle();
+}
+
+double Shape::getMass() const {
+    return fixture->getBody()->getMass();
 }
 

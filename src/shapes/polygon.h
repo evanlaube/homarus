@@ -34,6 +34,7 @@ class Polygon : public Shape {
     
         void calcArea() override;
         void calcCentroid() override;
+        void calcMoment() override;
 
     protected:
         std::vector<Vec2d> vertices;

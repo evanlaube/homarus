@@ -31,6 +31,7 @@ class Circle : public Shape {
 
         void calcArea() override;
         void calcCentroid() override;
+        void calcMoment() override; 
 
         void rotate(float angle) override { return; };
 

@@ -1,6 +1,7 @@
 // #define GIF_EXPORT
 
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 
 #include "homarus.h"
@@ -33,84 +34,47 @@ int main() {
     srand(time(NULL));
         
     World world;
-    world.setGravity(0, 100);
+    //world.setGravity(0, 100);
     
     Renderer renderer = Renderer(&world);
 
     renderer.init();
 
-    //std::vector<Vec2d> verts;
-    //verts.push_back(Vec2d(0, 0));
-    //verts.push_back(Vec2d(75, 75));
-    //verts.push_back(Vec2d(150, 0));
-    //verts.push_back(Vec2d(75,-75));
+    std::vector<Vec2d> verts;
+    verts.push_back(Vec2d(0, 0));
+    verts.push_back(Vec2d(200, 200));
+    verts.push_back(Vec2d(200, 0));
+    verts.push_back(Vec2d(0, 200));
 
-    //Polygon *s2 = new Polygon(verts);
-    //Fixture *f2 = new Fixture(s2);
-    //Body* b2 = world.createBody(f2, Vec2d(300, 90));
-    //b2->setMass(75*75 / 2);
-    //b2->setVel(Vec2d(1000, 0));
-    //// b2->rotate(M_PI/3);
-    //b2->setType(BODY_DYMANIC);
+    Polygon *s2 = new Polygon(verts);
+    Fixture *f2 = new Fixture(s2);
+    Body* b2 = world.createBody(f2, Vec2d(580, 360));
+    b2->setMass(1);
+    b2->setType(BODY_DYNAMIC);
     
-    Circle *circle = new Circle(55);
+    Circle *circle = new Circle(30);
     Fixture *fix = new Fixture(circle);
-    Body *circleBody = world.createBody(fix, Vec2d(400, 400));
-    circleBody->setMass(50*50*M_PI/2.5); // One half (ish) unit density
+    Body *circleBody = world.createBody(fix, Vec2d(200, 300));
+    circleBody->setVel(Vec2d(200, 0));
+    circleBody->setMass(1); // One half (ish) unit density
     circleBody->setType(BODY_DYNAMIC);
 
-    for(int i = 0; i < 3001; i++) {
-        float r = 3.5;//20 + ((float)rand()/RAND_MAX) * 15;
+    std::vector<Vec2d> circleVerts;
 
-        float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
-        float y = 20 + r + ((float)rand()/RAND_MAX) * (720-r-40);
-        
-        //float x = 540;
-        //float y = 358;
+    double r = 30;
+    for(int i = 0; i <= 320; i++) {
+        double theta = (M_PI/160) * i;
 
-        Circle c(r);
-        Fixture* f = new Fixture(&c);
-        Body* b1 = world.createBody(f, Vec2d(x,y));
-        b1->setVel(Vec2d((200 - ((float)rand()/RAND_MAX) * 400)*1, (200 - ((float)rand()/RAND_MAX) * 400)*1));
-        //b1->setVel(Vec2d(540/0.25, -360/0.25));
-        b1->setMass(r*r*3.14*2); // Twice as much as unit density
-        b1->setType(BODY_DYNAMIC);
+        double x = r * cos(theta);
+        double y = r * sin(theta);
+        circleVerts.push_back(Vec2d(x,y));
     }
+    std::cout << std::endl;
 
-    std::vector<Vec2d> floorVerts;
-    floorVerts.push_back(Vec2d(0, 0));
-    floorVerts.push_back(Vec2d(1080, 0));
-    floorVerts.push_back(Vec2d(1080, 100));
-    floorVerts.push_back(Vec2d(0, 100));
-
-    Polygon topFloorShape(floorVerts);
-    Fixture* topFloorFixture = new Fixture(&topFloorShape);
-    Body* s = world.createBody(topFloorFixture, Vec2d(540, -40));
-    s->setType(BODY_STATIC);
-    s->rotate(0.001); // To prevent having 0 or infinite slope
-
-    Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
-    Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
-    bottomFloor->setType(BODY_STATIC);
-    //bottomFloor->rotate(0.001);
-
-    std::vector<Vec2d> wallVerts;
-    wallVerts.push_back(Vec2d(0, 10));
-    wallVerts.push_back(Vec2d(100, 10));
-    wallVerts.push_back(Vec2d(100, 710));
-    wallVerts.push_back(Vec2d(0, 710));
-
-    Polygon wallShape(wallVerts);
-    Fixture* leftWallFixture = new Fixture(&wallShape);
-    Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
-    leftWall->setType(BODY_STATIC);
-    //leftWall->rotate(0.0001);
-
-    Fixture* rightWallFixture = new Fixture(&wallShape);
-    Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
-    rightWall->setType(BODY_STATIC);
-    //rightWall->rotate(0.0001);
-
+    Polygon *polyCircle = new Polygon(circleVerts);
+    Fixture *polyCircleFix = new Fixture(polyCircle);
+    Body *polyCircleBody = world.createBody(polyCircleFix, Vec2d(100, 100));
+    polyCircleBody->setMass(1);
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
@@ -122,6 +86,11 @@ int main() {
     GifWriter gifWriter;
     GifBegin(&gifWriter, "output.gif", 1080, 720, 2); // Adjust the frame rate as needed
 #endif
+
+    std::cout << "32 sided circle moment: " << polyCircleBody->getMoment() << " | mass: " << polyCircleBody->getMass() << std::endl;
+    std::cout << "Circle moment: " << circleBody->getMoment() << " | mass: " << circleBody->getMass() << " | Ratio: " << circleBody->getMoment() / polyCircleBody->getMoment() <<  std::endl;
+    double formulated = (1/12.0) * b2->getMass() * (200 * 200 + 200 * 200);
+    std::cout << "Square moment: " << b2->getMoment() << " | Formulated: " << formulated << " | " << formulated / b2->getMoment() << std::endl;
 
     while(renderer.close == false) {
         

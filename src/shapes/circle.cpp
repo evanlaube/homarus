@@ -294,3 +294,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
     }
     return Collision();
 }
+
+void Circle::calcMoment() {
+    moment = (0.5) * getMass() * r * r;
+}

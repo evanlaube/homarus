@@ -36,7 +36,16 @@ void Body::setPos(Vec2d p) {
     pos.y = p.y;
 }
 
+void Body::setMass(double mass) {
+    this->mass = mass;
+    fixture.getShape()->calcMoment();
+}
+
 void Body::rotate(float angle) {
     fixture.shape->rotate(angle);
     this->ang += angle;
+}
+
+double Body::getMoment() const {
+    return fixture.getShape()->getMoment();
 }

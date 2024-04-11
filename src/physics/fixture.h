@@ -13,8 +13,6 @@ class Fixture {
         Fixture(Shape shape);
         Fixture(Shape *shape);
 
-        float mass;
-
         bool attach(Body* b);
 
         void setShape(Shape *s);

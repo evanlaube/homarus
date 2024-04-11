@@ -14,14 +14,15 @@ class Body {
         Body();
         Body(Fixture *fixture);
 
-        Body* getNext() { return next; }
-        Body* getLast() { return last; }
+        Body* getNext() const { return next; }
+        Body* getLast() const { return last; }
 
-        Vec2d getPos() { return pos; };
-        Vec2d getVel() { return vel; };
-        Vec2d getAcc() { return acc; };
+        Vec2d getPos() const { return pos; };
+        Vec2d getVel() const { return vel; };
+        Vec2d getAcc() const { return acc; };
         
-        float getAngle() { return ang; };
+        float getAngle() const { return ang; };
+        double getMoment() const;
 
         void setType(short type) { this->type = type;}
         void setFixture(Fixture *f);
@@ -32,7 +33,7 @@ class Body {
         short getType() const { return type; }
 
         double getMass() { return mass; }
-        void setMass(double mass) { this->mass = mass; }
+        void setMass(double mass);
 
         bool isColliding(Body *b) const { return fixture.getShape()->checkOverlap(b->fixture.getShape()); };
         bool pointInside(Vec2d p) const { return fixture.getShape()->pointInside(p); }

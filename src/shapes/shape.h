@@ -18,19 +18,23 @@ class Shape {
         virtual Shape* clone() const = 0;
 
         virtual short getType() const = 0;
-        Vec2d centroid;
-        float area;
        
         void attach(Fixture* f);
         Fixture* getFixture() { return fixture; }
 
         Vec2d getPos() const;
-        float getAngle();
+        float getAngle() const;
+        double getArea() const { return area; };
+        double getMoment() const { return moment; }
         float getMaxRadius() const { return maxRadius; }
+        Vec2d getCentroid() const { return centroid; }
+        double getMass() const;
+
         virtual void rotate(float angle) = 0;
 
         virtual void calcCentroid() = 0;
         virtual void calcArea() = 0;
+        virtual void calcMoment() = 0;
 
         virtual bool pointInside(Vec2d point) const = 0;
         virtual bool checkOverlap(Shape *s)  const = 0;
@@ -43,7 +47,10 @@ class Shape {
         virtual Collision getPolygonCollision(Polygon *s) const = 0;
 
     protected:
-        float maxRadius;
+        Vec2d centroid;
+        double maxRadius;
+        double area;
+        double moment;
     private:
         Fixture* fixture = nullptr;
 

@@ -115,8 +115,8 @@ void Renderer::drawShape(Circle *c, float x, float y, float a) {
 
 void Renderer::drawShape(Polygon *p, float x, float y, float a) {
     
-    float cx = p->centroid.x;
-    float cy = p->centroid.y;
+    float cx = p->getCentroid().x;
+    float cy = p->getCentroid().y;
 
     glBegin(GL_POLYGON);
 

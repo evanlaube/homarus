@@ -7,6 +7,7 @@
 #include "../util/vec2.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
@@ -310,4 +311,33 @@ Collision Polygon::getPolygonCollision(Polygon* s) const {
 
     Vec2d overlap = point - closestEdgePoint;
     return Collision(overlap, tangent, closestEdgePoint);
+}
+
+void Polygon::calcMoment() {
+    double ar = 0;
+    Vec2d center;
+    double mmoi = 0;
+
+    int count = vertices.size();
+    int prev = count-1;
+    for(int i = 0; i < count; i++) {
+        Vec2d a = vertices[prev];
+        Vec2d b = vertices[i];
+        
+        double areaStep = a.crossZ(b) / 2.0;
+        Vec2d centerStep = (a + b) * (1.0 / 3.0);
+        double mmoiStep = areaStep * (a.dot(a) + b.dot(b) + a.dot(b)) / 6.0;
+
+        center = (center * ar + centerStep * areaStep) *  ((1.0) / (ar + areaStep));
+        ar += areaStep;
+        mmoi += mmoiStep;
+
+        prev = i;
+    }
+
+    double density = getMass() / ar;
+    mmoi *= density;
+    mmoi -= getMass() * center.dot(center);
+
+    moment = mmoi;
 }

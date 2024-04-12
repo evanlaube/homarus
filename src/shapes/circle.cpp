@@ -191,13 +191,13 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
         if(v1.x == v2.x) {
             double xInt = v1.x; // because v1.x == v2.x
             double yInt = getPos().y; 
-            
             intersect = Vec2d(xInt, yInt);
             
-            if(yInt > std::max(v1.y, v2.y) || xInt < std::min(v2.y, v1.y)) {
+            if(yInt > std::max(v1.y, v2.y) || yInt < std::min(v2.y, v1.y)) {
                 v1 = v2;
                 continue;
             }
+
 
             if(pointInside(intersect)) {
                 double x = getPos().x - r;
@@ -210,8 +210,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
                 } else {
                     x = getPos().x + r;
                     overlapPoint.x = x;
-
-                        overlap = (overlapPoint - intersect);
+                    overlap = (overlapPoint - intersect);
                 }
 
                 tangent = Vec2d(0, 1);
@@ -224,7 +223,7 @@ Collision Circle::getPolygonCollision(Polygon* s) const {
 
             intersect = Vec2d(xInt, yInt);
 
-            if(xInt > std::max(v1.x, v2.x) || xInt < std::min(v2.x, v1.x)) {
+            if(xInt > std::max(v1.x, v2.x) || yInt < std::min(v2.x, v1.x)) {
         v1 = v2;
                 continue;
             } else {

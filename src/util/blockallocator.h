@@ -15,9 +15,6 @@ class BlockAllocator {
     private:
         Chunk* chunks;
         int chunkCount;
-
-       
-
 };
 
 #endif // !H_BLOCK_ALLOCATOR

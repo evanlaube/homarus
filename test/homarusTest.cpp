@@ -42,39 +42,23 @@ int main() {
 
     std::vector<Vec2d> verts;
     verts.push_back(Vec2d(0, 0));
-    verts.push_back(Vec2d(200, 200));
-    verts.push_back(Vec2d(200, 0));
-    verts.push_back(Vec2d(0, 200));
+    verts.push_back(Vec2d(100, 0));
+    verts.push_back(Vec2d(100, 500));
+    verts.push_back(Vec2d(0, 500));
 
     Polygon *s2 = new Polygon(verts);
     Fixture *f2 = new Fixture(s2);
     Body* b2 = world.createBody(f2, Vec2d(580, 360));
-    b2->setMass(1);
+    b2->rotate(0.2);
+    b2->setMass(25*500);
     b2->setType(BODY_DYNAMIC);
     
     Circle *circle = new Circle(30);
     Fixture *fix = new Fixture(circle);
-    Body *circleBody = world.createBody(fix, Vec2d(200, 300));
+    Body *circleBody = world.createBody(fix, Vec2d(200, 280));
     circleBody->setVel(Vec2d(200, 0));
-    circleBody->setMass(1); // One half (ish) unit density
+    circleBody->setMass(30*30*3.14); // One half (ish) unit density
     circleBody->setType(BODY_DYNAMIC);
-
-    std::vector<Vec2d> circleVerts;
-
-    double r = 30;
-    for(int i = 0; i <= 320; i++) {
-        double theta = (M_PI/160) * i;
-
-        double x = r * cos(theta);
-        double y = r * sin(theta);
-        circleVerts.push_back(Vec2d(x,y));
-    }
-    std::cout << std::endl;
-
-    Polygon *polyCircle = new Polygon(circleVerts);
-    Fixture *polyCircleFix = new Fixture(polyCircle);
-    Body *polyCircleBody = world.createBody(polyCircleFix, Vec2d(100, 100));
-    polyCircleBody->setMass(1);
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
@@ -86,11 +70,6 @@ int main() {
     GifWriter gifWriter;
     GifBegin(&gifWriter, "output.gif", 1080, 720, 2); // Adjust the frame rate as needed
 #endif
-
-    std::cout << "32 sided circle moment: " << polyCircleBody->getMoment() << " | mass: " << polyCircleBody->getMass() << std::endl;
-    std::cout << "Circle moment: " << circleBody->getMoment() << " | mass: " << circleBody->getMass() << " | Ratio: " << circleBody->getMoment() / polyCircleBody->getMoment() <<  std::endl;
-    double formulated = (1/12.0) * b2->getMass() * (200 * 200 + 200 * 200);
-    std::cout << "Square moment: " << b2->getMoment() << " | Formulated: " << formulated << " | " << formulated / b2->getMoment() << std::endl;
 
     while(renderer.close == false) {
         

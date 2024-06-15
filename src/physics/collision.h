@@ -10,12 +10,14 @@ struct Collision {
         bool colliding = false;
         Vec2d overlap;
         Vec2d tangent;
+        Vec2d normal;
         Vec2d intersection;
 
         Collision(Vec2d o, Vec2d t, Vec2d i) {
             colliding = true;
             overlap = o;
             tangent = t;
+            normal = Vec2d(-t.y, t.x);
             intersection = i;
         }
 

@@ -5,6 +5,7 @@
 #include "../homarus.h"
 #include "collision.h"
 #include "../util/gridpartitioner.h"
+#include <cmath>
 #include <iostream>
 #include <unordered_set>
 
@@ -33,6 +34,11 @@ void World::update(double timestep) {
             b->vel += (b->acc * timestep);
             b->vel += gravity * timestep;
             b->acc.erase();
+
+            b->rotate(b->omega * timestep);
+            b->omega += b->alpha * timestep;
+            b->alpha = 0;
+
         } else {
             b->acc.erase();
         }
@@ -67,40 +73,22 @@ void World::collide(Body *a, Body *b, Collision c) {
         return;
 
     if(!c.colliding) {
-        std::cout << "Collising triggered, but not colliding" << std::endl;
+        std::cout << "Collision triggered, but not colliding" << std::endl;
         return;
     }
 
-    //std::cout << c << std::endl;
     //std::cout << "KE before collision: " << getTotalKE() << std::endl;
     Vec2d overlap = c.overlap;
     Vec2d tangent = c.tangent;
+    Vec2d normal = c.normal;
     Vec2d intersect = c.intersection;
 
     // This check can be made more efficient
-    Vec2d aVel = a->fixture.getBody()->vel;
-    Vec2d bVel = b->fixture.getBody()->vel;
+    Vec2d aVel = a->fixture.getBody()->getVel();
+    Vec2d bVel = b->fixture.getBody()->getVel();
 
     double aVelMag = aVel.mag();
     double bVelMag = bVel.mag();
- 
-    if(aVelMag == 0 && bVelMag == 0) {
-        if(a->getType() != BODY_STATIC) {
-            aVelMag = 1;
-        }
-
-        if(b->getType() != BODY_STATIC) {
-            bVelMag = 1;
-        }
-    }
-
-    if(b->getType() == BODY_STATIC) {
-        bVelMag = 0;
-    }
-
-    if(a->getType() == BODY_STATIC) {
-        aVelMag = 0;
-    }
 
     // Static Collision
     // A small pecrentage gap is needed (1%) in order to stop objects from
@@ -108,31 +96,26 @@ void World::collide(Body *a, Body *b, Collision c) {
     // TODO: Change this code up to have a smaller margin of error. 
     a->pos += overlap * 1.01 * (aVelMag /(aVelMag + bVelMag));
     b->pos -= overlap * 1.01 * (bVelMag /(aVelMag + bVelMag));
+
+    // Perpendicular 'radius' from COM of body to point of intersect
+    Vec2d ra = intersect - a->getPos();
+    ra = Vec2d(ra.y, -1*ra.x);
+    Vec2d rb = intersect - b->getPos();
+    rb = Vec2d(rb.y, -1*rb.x);
+
+    // Velocity of a with respect to b
+    Vec2d vab = aVel - bVel;
+
+    // Calculate impulse of collison
+    double j = ((-2 * vab).dot(normal)) / ((normal.dot(normal) * (1.0/a->getMass() + 1.0/b->getMass())) + pow(ra.dot(normal), 2)/a->getMoment() + pow(rb.dot(normal), 2)/b->getMoment());
     
-    Vec2d normal = Vec2d(tangent.y, -tangent.x);
+    // Update linear velocities according to calculated impulse
+    a->vel = aVel + normal * (j * (1.0/a->getMass()));
+    b->vel = bVel - normal * (j * (1.0/b->getMass()));
 
-    double dptanA = a->vel.dot(tangent);
-    double dptanB = b->vel.dot(tangent);
-
-    double dpnormA = a->vel.dot(normal);
-    double dpnormB = b->vel.dot(normal);
-
-    double p2 = (a->mass * dpnormA + b->mass * dpnormB + a->mass * (dpnormA - dpnormB)) / (a->mass + b->mass);
-    double p1 = p2 - (dpnormA - dpnormB);
-
-    if(a->getType() == BODY_STATIC) {
-        p1 = 0;
-        p2 = -dpnormB;
-    } else if(b->getType() == BODY_STATIC) {
-        p2 = 0;
-        p1 = -dpnormA;
-    }
-
-    a->vel.x = dptanA * tangent.x + p1 * normal.x;
-    a->vel.y = dptanA * tangent.y + p1 * normal.y;
-
-    b->vel.x = dptanB * tangent.x + p2 * normal.x;
-    b->vel.y = dptanB * tangent.y + p2 * normal.y;
+    // Update angular velocities according to impulse
+    a->omega = a->omega + (normal*j).dot(ra) / a->getMoment(); 
+    b->omega = b->omega - (rb.dot(normal * j)) / b->getMoment(); 
 
     //std::cout << "KE after collision: " << getTotalKE() << std::endl;
 }
@@ -162,8 +145,14 @@ double World::getTotalKE() const {
 
     Body* b = bodyLink;
     while(b != nullptr) {
+        if(b->getMass() == INFINITY) {
+            b = b->next;
+            continue;
+        }
+
         double velMagSquared = b->getVel().magSquared();
         total += (0.5) * b->mass * velMagSquared;
+        total += 0.5 * b->getMoment() * b->getOmega() * b->getOmega();
         b = b->next;
     }
     return total;

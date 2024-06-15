@@ -21,3 +21,11 @@ bool Fixture::attach(Body* b) {
     attached = true;
     return true;
 }
+
+bool Fixture::setShape(Shape *s) {
+    if(shape == nullptr) {
+        shape = s;
+        return true;
+    }
+    return false;
+}

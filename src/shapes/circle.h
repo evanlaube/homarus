@@ -7,6 +7,12 @@
 #include "shape.h"
 #include "../util/vec2.h"
 
+/**
+ * Circle is a shape type that is defined by only a radius. It is a polymorphic child
+ * of the Shape class.
+ * 
+ * Check Shape header file for documentation.
+ */
 class Circle : public Shape {
 
     public:
@@ -15,9 +21,7 @@ class Circle : public Shape {
             return new Circle(*this);
         }
 
-        short getType() const override {
-            return TYPE_CIRCLE;
-        }
+        short getType() const override { return TYPE_CIRCLE; }
 
         bool pointInside(Vec2d point) const override;
         bool checkOverlap(Shape *s) const override;
@@ -37,7 +41,8 @@ class Circle : public Shape {
 
         float getRadius() { return r; }
     private:
-        float r;
+        /** Radius of the circle */
+        double r;
 
 
 };

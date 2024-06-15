@@ -5,11 +5,15 @@
 
 #include <cmath>
 #include <ostream>
-#include <valarray>
 
+/**
+ * The Vec2d struct is a 2d Vector struct that allows for all needed 2D Vector math to
+ * be calculated easily.
+ */
 struct Vec2d {
-
+    /** x-component of the vector */
     double x;
+    /** y-component of the vector */
     double y;
 
     Vec2d() : x(0), y(0) {}
@@ -19,17 +23,31 @@ struct Vec2d {
         this->y = y;
     }
 
+    /**
+     * Calculate the magnitude of the vector.
+     * @return Magnitude of vector.
+     */
     double mag() const {
         return sqrt(x*x + y*y);
     }
 
+    /**
+     * Calculate squared magnitude of the vector, omitting the costly square root function.
+     * This is useful for comparing magnitudes efficiently, as the square root is not needed to
+     * determine which magnitude is greater.
+     *
+     * @return The squared magnitude of the vector.
+     */
     double magSquared() const {
-        // Return magnitude squared - needed in some calculations for efficiency purposes
         return x*x + y*y;
     }
 
+    /**
+     * Calculates a vector in the same direction but with a magnitude of 1;
+     *
+     * @return Normalized vector.
+     */
     Vec2d norm() const{
-
         double m = mag();
 
         if(m == 0) {
@@ -42,27 +60,30 @@ struct Vec2d {
         return Vec2d(mx, my);
     }
 
+    /**
+     * Caclculates the dot product between vector and other vector.
+     *
+     * @param b Other vector in dot product calculation
+     * @return Dot product between self and b
+     */
     double dot(Vec2d b) const {
         return x*b.x + y*b.y;
     }
 
-    // Returns the z component of the cross product
-    //  - For 2D vectors, the x and y component is 0 when taking
-    //    a cross product
+    /**
+     * Calculates the cross product of the vector and another, only returning the z-component,
+     * as that is the only component with magnitude in a 2D cross product.
+     *
+     * @param b Other vector in cross product calculation
+     * @return Z-component of cross product calculation.
+     */
     double crossZ(Vec2d b) const {
         return (x * b.y) - (y * b.x);
     }
 
-    void increase(Vec2d b) {
-        x += b.x;
-        y += b.y;
-    }
-
-    void mult(float s) {
-        x *= s;
-        y *= s;
-    }
-
+    /**
+     * Sets the vector to the zero vector.
+     */
     void erase() {
         x = 0;
         y = 0;

@@ -48,7 +48,7 @@ void Body::setMass(double mass) {
 }
 
 void Body::rotate(float angle) {
-    fixture.shape->rotate(angle);
+    fixture.getShape()->rotate(angle);
     this->ang += angle;
 }
 

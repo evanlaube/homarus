@@ -19,13 +19,13 @@ World::World() : partitioner(200, 200, 1080, 720) {
     gravity = Vec2d(0,0);
 }
 
-void World::step(double timestep, int updates) {
+void World::update(double timestep, int updates) {
     for(int i = 0; i < updates; i++) {
-        update(timestep/updates);
+        step(timestep/updates);
     }
 }
 
-void World::update(double timestep) {
+void World::step(double timestep) {
     Body* b = bodyLink;
 
     while(b != nullptr) {
@@ -69,24 +69,25 @@ void World::update(double timestep) {
 }
 
 void World::collide(Body *a, Body *b, Collision c) {
+    // Ignore if both bodies are static
     if(a->getType() == BODY_STATIC && b->getType() == BODY_STATIC)
         return;
 
+    // Ensure that passed collision actually has overlap
     if(!c.colliding) {
         std::cout << "Collision triggered, but not colliding" << std::endl;
         return;
     }
 
-    //std::cout << "KE before collision: " << getTotalKE() << std::endl;
     Vec2d overlap = c.overlap;
     Vec2d tangent = c.tangent;
     Vec2d normal = c.normal;
     Vec2d intersect = c.intersection;
 
-    // This check can be made more efficient
     Vec2d aVel = a->fixture.getBody()->getVel();
     Vec2d bVel = b->fixture.getBody()->getVel();
 
+    // Get magnitudes of velocities of both bodies
     double aVelMag = aVel.mag();
     double bVelMag = bVel.mag();
 
@@ -116,8 +117,6 @@ void World::collide(Body *a, Body *b, Collision c) {
     // Update angular velocities according to impulse
     a->omega = a->omega + (normal*j).dot(ra) / a->getMoment(); 
     b->omega = b->omega - (rb.dot(normal * j)) / b->getMoment(); 
-
-    //std::cout << "KE after collision: " << getTotalKE() << std::endl;
 }
 
 Body* World::createBody(Fixture *f, Vec2d pos) {
@@ -134,13 +133,10 @@ Body* World::createBody(Fixture *f, Vec2d pos) {
     bodyLink = b;
     bodyCount++;
 
-    partitioner.insertBody(b);
-
     return b;
 }
 
 double World::getTotalKE() const {
-    
     double total = 0;
 
     Body* b = bodyLink;
@@ -151,7 +147,9 @@ double World::getTotalKE() const {
         }
 
         double velMagSquared = b->getVel().magSquared();
+        // Add linear kinetic energy to total
         total += (0.5) * b->mass * velMagSquared;
+        // Add rotational kinetic energy to total
         total += 0.5 * b->getMoment() * b->getOmega() * b->getOmega();
         b = b->next;
     }

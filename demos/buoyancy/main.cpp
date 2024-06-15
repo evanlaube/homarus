@@ -119,7 +119,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.step(elapsed, 2);
+        world.update(elapsed, 2);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 

@@ -2,6 +2,8 @@
 #include "body.h"
 #include "../shapes/shape.h"
 #include "fixture.h"
+#include "../homarus.h"
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 
@@ -36,6 +38,10 @@ void Body::setPos(Vec2d p) {
     pos.y = p.y;
 }
 
+void Body::setOmega(double w) {
+    omega = w;
+}
+
 void Body::setMass(double mass) {
     this->mass = mass;
     fixture.getShape()->calcMoment();
@@ -47,5 +53,15 @@ void Body::rotate(float angle) {
 }
 
 double Body::getMoment() const {
+    if(type == BODY_STATIC) {
+        return INFINITY;
+    }
     return fixture.getShape()->getMoment();
+}
+
+double Body::getMass() const {
+    if(type == BODY_STATIC) {
+        return INFINITY;
+    }
+    return mass;
 }

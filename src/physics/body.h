@@ -21,18 +21,21 @@ class Body {
         Vec2d getVel() const { return vel; };
         Vec2d getAcc() const { return acc; };
         
-        float getAngle() const { return ang; };
+        double getAngle() const { return ang; };
+        double getOmega() const { return omega; };
+        double getAplha() const { return alpha; };
         double getMoment() const;
 
         void setType(short type) { this->type = type;}
         void setFixture(Fixture *f);
         void setPos(Vec2d p);
         void setVel(Vec2d v) { vel = v; }
+        void setOmega(double w);
         void rotate(float angle);
         Shape* getShape() { return fixture.getShape(); }
         short getType() const { return type; }
 
-        double getMass() { return mass; }
+        double getMass() const;
         void setMass(double mass);
 
         bool isColliding(Body *b) const { return fixture.getShape()->checkOverlap(b->fixture.getShape()); };
@@ -45,8 +48,8 @@ class Body {
         Vec2d acc;
 
         double ang; // Angle stored in radians
-        double angVel;
-        double angAcc;
+        double omega;
+        double alpha;
 
         double mass;
         

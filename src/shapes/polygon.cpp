@@ -314,6 +314,11 @@ Collision Polygon::getPolygonCollision(Polygon* s) const {
 }
 
 void Polygon::calcMoment() {
+    if(getMass() == INFINITY) {
+        moment = INFINITY;
+        return;
+    }
+
     double ar = 0;
     Vec2d center;
     double mmoi = 0;

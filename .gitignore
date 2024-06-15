@@ -44,8 +44,14 @@
 .cache
 .cmake
 
+# Unignore dconfig
+!Doxyfile
+
 # Build Folder
 build
+
+# docs Folder
+docs
 
 # Personal notes
 notes.txt

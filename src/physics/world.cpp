@@ -100,23 +100,24 @@ void World::collide(Body *a, Body *b, Collision c) {
 
     // Perpendicular 'radius' from COM of body to point of intersect
     Vec2d ra = intersect - a->getPos();
-    ra = Vec2d(ra.y, -1*ra.x);
+    Vec2d rap = Vec2d(ra.y, -1*ra.x);
     Vec2d rb = intersect - b->getPos();
-    rb = Vec2d(rb.y, -1*rb.x);
+    Vec2d rbp = Vec2d(rb.y, -1*rb.x);
 
     // Velocity of a with respect to b
-    Vec2d vab = aVel - bVel;
+    Vec2d vab = (aVel + rap*a->getOmega()) - (bVel + rbp*b->getOmega());
 
     // Calculate impulse of collison
-    double j = ((-2 * vab).dot(normal)) / ((normal.dot(normal) * (1.0/a->getMass() + 1.0/b->getMass())) + pow(ra.dot(normal), 2)/a->getMoment() + pow(rb.dot(normal), 2)/b->getMoment());
+    // TODO: Add in coefficinet of restitution
+    double j = ((-2 * vab).dot(normal)) / ((normal.dot(normal) * (1.0/a->getMass() + 1.0/b->getMass())) + pow(rap.dot(normal), 2)/a->getMoment() + pow(rbp.dot(normal), 2)/b->getMoment());
     
     // Update linear velocities according to calculated impulse
     a->vel = aVel + normal * (j * (1.0/a->getMass()));
     b->vel = bVel - normal * (j * (1.0/b->getMass()));
 
     // Update angular velocities according to impulse
-    a->omega = a->omega + (normal*j).dot(ra) / a->getMoment(); 
-    b->omega = b->omega - (rb.dot(normal * j)) / b->getMoment(); 
+    a->omega = a->omega + (normal*j).dot(rap) / a->getMoment(); 
+    b->omega = b->omega - (rbp.dot(normal * j)) / b->getMoment(); 
 }
 
 Body* World::createBody(Fixture *f, Vec2d pos) {

@@ -14,9 +14,9 @@
 void Polygon::orderVertices() {
     // Subtract first vertex from all verticies to make first vertex (0,0)
     Vec2d first = vertices[0];
-    first.mult(-1);
+    first = first * -1;
     for(int i = 0; i < vertices.size(); i++) {
-        vertices[i].increase(first);
+        vertices[i] += first;
     }
 
     std::sort(vertices.begin(), vertices.end(), ccwCompare);
@@ -216,7 +216,6 @@ void Polygon::rotateVertices(float theta) {
 }
 
 Collision Polygon::getCollision(Shape *s) const {
-    
     return s->getPolygonCollision((Polygon*)this);
 }
 

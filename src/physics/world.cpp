@@ -1,6 +1,7 @@
 
 #include "world.h"
 #include "body.h"
+#include "joints/spring.h"
 #include "../util/blockallocator.h"
 #include "../homarus.h"
 #include "collision.h"
@@ -28,11 +29,12 @@ void World::update(double timestep, int updates) {
 void World::step(double timestep) {
     Body* b = bodyLink;
 
+    // Move objects kinematically
     while(b != nullptr) {
         if(b->getType() != BODY_STATIC) {
-            b->pos += (b->vel * timestep);
-            b->vel += (b->acc * timestep);
             b->vel += gravity * timestep;
+            b->vel += (b->acc * timestep);
+            b->pos += (b->vel * timestep);
             b->acc.erase();
 
             b->rotate(b->omega * timestep);
@@ -48,6 +50,7 @@ void World::step(double timestep) {
 
     partitioner.update(bodyLink);
 
+    // Resolve collisions
     b = bodyLink;
     while(b != nullptr) {
         std::unordered_set<Body*> neighbors = partitioner.getNeighbors(b);
@@ -65,6 +68,13 @@ void World::step(double timestep) {
         }
 
         b = b->getNext();
+    }
+
+    // Update joints
+    Joint* j = jointLink;
+    while(j != nullptr) {
+        j->update();
+        j = j->getNext();
     }
 }
 
@@ -122,7 +132,7 @@ void World::collide(Body *a, Body *b, Collision c) {
 
 Body* World::createBody(Fixture *f, Vec2d pos) {
     void* mem = allocator.allocate(sizeof(Body));
-    Body* b = new Body(f);
+    Body* b = new (mem) Body(f);
     b->next = bodyLink;
 
     if(b->next) {
@@ -135,6 +145,15 @@ Body* World::createBody(Fixture *f, Vec2d pos) {
     bodyCount++;
 
     return b;
+}
+
+Spring* World::createSpring(Body* a, Body* b, double constant) {
+    void* mem = allocator.allocate(sizeof(Spring)); 
+    Spring *spring = new (mem) Spring(a, b, constant);
+    spring->next = jointLink;
+    jointLink = spring;
+
+    return spring;
 }
 
 double World::getTotalKE() const {
@@ -155,4 +174,17 @@ double World::getTotalKE() const {
         b = b->next;
     }
     return total;
+}
+
+double World::getTotalEnergy() const {
+    double kineticEnergy = getTotalKE();
+
+    double jointEnergy = 0;
+    Joint* j = jointLink;
+    while(j != nullptr) {
+        jointEnergy += j->getEnergy();
+        j = j->getNext();
+    }
+
+    return kineticEnergy + jointEnergy;
 }

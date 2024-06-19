@@ -6,6 +6,7 @@
 #include "../util/blockallocator.h"
 #include "../util/vec2.h"
 #include "../util/gridpartitioner.h"
+#include "joints/joint.h"
 
 /**
  * The World class is the container for all entities that are created. Only one world is needed
@@ -14,6 +15,8 @@
  *
  * The World should be created first, before any bodies are created.
  */
+
+class Spring;
 
 class World {
     public:
@@ -28,6 +31,9 @@ class World {
         /** Pointer to first body in linked list of bodies */
         Body* bodyLink = nullptr;
 
+        /** Pointer to first joint in linked list of joints */
+        Joint* jointLink = nullptr;
+
         /** Number of bodies in world */
         int bodyCount = 0;
 
@@ -40,6 +46,19 @@ class World {
          * @return A pointer to the created body
          */
         Body* createBody(Fixture *f, Vec2d pos);
+
+        /**
+         * This function allocates the needed memory for a Spring type joint and 
+         * creates it with the given parameters. Note that the equilibrium length of
+         * the spring is initially set to the distance of the two bodies, but can be
+         * changes with spring->setEquilibriumlength(double length)
+         *
+         * @param a The first body the spring attaches to
+         * @param b The second body the spring attaches to
+         * @param constant The constant of the spring
+         * @return A pointer to the created spring.
+         */
+        Spring* createSpring(Body* a, Body* b, double constant);
 
         /**
          * This function progresses bodies in world forward in time over multiple physics steps
@@ -72,10 +91,17 @@ class World {
          * @return The calculated amount of kinetic energy in joules.
          */
         double getTotalKE() const;
+        
+        /**
+         * This function combines the total calculated kinetic energy of all bodies 
+         * in the world with the potential energy calculated from all joints in the world.
+         *
+         * @return The calculated amount of total energy in joules.
+         */
+        double getTotalEnergy() const;
 
         void setGravity(float x, float y) { gravity = Vec2d(x,y); }
         Vec2d getGravity() const { return gravity; }
-
     private:
         /** Vector storing the acceleration on all bodies due to gravity (in m/s^2) */
         Vec2d gravity;

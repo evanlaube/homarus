@@ -7,6 +7,8 @@
 #include "homarus.h"
 
 #include "physics/fixture.h"
+#include "physics/joints/spring.h"
+#include "physics/joints/joint.h"
 #include "physics/world.h"
 #include "renderer.h"
 #include "shapes/shape.h"
@@ -19,10 +21,13 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <vector>
 
+#ifdef GIF_EXPORT
 #include "../lib/gif.h"
+#endif
 
 uint64_t getTime() {
     // Return integer of miliseconds since epoch
@@ -40,25 +45,56 @@ int main() {
 
     renderer.init();
 
+    std::vector<Vec2d> floorVerts;
+    floorVerts.push_back(Vec2d(0, 0));
+    floorVerts.push_back(Vec2d(1080, 0));
+    floorVerts.push_back(Vec2d(1080, 100));
+    floorVerts.push_back(Vec2d(0, 100));
+    Polygon topFloorShape(floorVerts);
+    Fixture* topFloorFixture = new Fixture(&topFloorShape);
+    Body* s = world.createBody(topFloorFixture, Vec2d(540, -40));
+    s->setType(BODY_STATIC);
+    Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
+    Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
+    bottomFloor->setType(BODY_STATIC);
+
+    std::vector<Vec2d> wallVerts;
+    wallVerts.push_back(Vec2d(0, 10));
+    wallVerts.push_back(Vec2d(100, 10));
+    wallVerts.push_back(Vec2d(100, 710));
+    wallVerts.push_back(Vec2d(0, 710));
+    Polygon wallShape(wallVerts);
+    Fixture* leftWallFixture = new Fixture(&wallShape);
+    Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
+    leftWall->setType(BODY_STATIC);
+    Fixture* rightWallFixture = new Fixture(&wallShape);
+    Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
+    rightWall->setType(BODY_STATIC);
+
     std::vector<Vec2d> verts;
     verts.push_back(Vec2d(0, 0));
     verts.push_back(Vec2d(100, 0));
-    verts.push_back(Vec2d(100, 500));
-    verts.push_back(Vec2d(0, 500));
+    verts.push_back(Vec2d(100, 100));
+    verts.push_back(Vec2d(0, 100));
 
     Polygon *s2 = new Polygon(verts);
     Fixture *f2 = new Fixture(s2);
     Body* b2 = world.createBody(f2, Vec2d(580, 360));
-    b2->rotate(0.2);
-    b2->setMass(25*500);
+    b2->setOmega(3);
+    b2->rotate(0);
+    b2->setMass(25);
+    b2->setVel(Vec2d(100, 50));
     b2->setType(BODY_DYNAMIC);
     
     Circle *circle = new Circle(30);
     Fixture *fix = new Fixture(circle);
-    Body *circleBody = world.createBody(fix, Vec2d(200, 280));
-    circleBody->setVel(Vec2d(200, 0));
-    circleBody->setMass(30*30*3.14); // One half (ish) unit density
+    Body *circleBody = world.createBody(fix, Vec2d(400, 360));
+    circleBody->rotate(1);
+    circleBody->setMass(25); 
+    circleBody->setVel(Vec2d(-100, -150));
     circleBody->setType(BODY_DYNAMIC);
+
+    Spring* spring = world.createSpring(b2, circleBody, 200);
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
@@ -89,7 +125,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.update(0.008, 2);
+        world.update(elapsed, 2);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 

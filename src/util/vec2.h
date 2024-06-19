@@ -110,6 +110,10 @@ struct Vec2d {
         return Vec2d(k*a.x, k*a.y);
     }
 
+    friend Vec2d operator/(Vec2d a, double k) {
+        return Vec2d(a.x/k, a.y/k);
+    }
+
     void operator+=(const Vec2d& b) {
         x = x + b.x;
         y = y + b.y;

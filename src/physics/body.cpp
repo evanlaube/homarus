@@ -52,6 +52,10 @@ void Body::rotate(float angle) {
     this->ang += angle;
 }
 
+void Body::applyForce(Vec2d force) {
+    acc += force * (1/mass);
+}
+
 double Body::getMoment() const {
     if(type == BODY_STATIC) {
         return INFINITY;

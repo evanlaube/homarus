@@ -57,6 +57,14 @@ class Body {
          */
         void rotate(float angle);
 
+        /**
+         * Applies a force to the body according to the passed vector. The force is applied
+         * over one phyisics step.
+         *
+         * @param force A vector that depicts the force applied in newtons
+         */
+        void applyForce(Vec2d force);
+        void applyForce(double fx, double fy) { applyForce(Vec2d(fx, fy)); }
 
         /**
          * Checks if body is colliding with other.

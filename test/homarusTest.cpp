@@ -39,9 +39,11 @@ int main() {
     srand(time(NULL));
         
     World world;
-    //world.setGravity(0, 100);
+    world.setGravity(0, 100);
     
     Renderer renderer = Renderer(&world);
+    // Set renderer to have 32 pixels per world meter
+    renderer.setScale(1);
 
     renderer.init();
 
@@ -71,30 +73,30 @@ int main() {
     Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
     rightWall->setType(BODY_STATIC);
 
-    std::vector<Vec2d> verts;
-    verts.push_back(Vec2d(0, 0));
-    verts.push_back(Vec2d(100, 0));
-    verts.push_back(Vec2d(100, 100));
-    verts.push_back(Vec2d(0, 100));
+    std::vector<Vec2d> squareVerts;
+    squareVerts.push_back(Vec2d(0, 0));
+    squareVerts.push_back(Vec2d(100, 0));
+    squareVerts.push_back(Vec2d(100, 100));
+    squareVerts.push_back(Vec2d(0, 100));
 
-    Polygon *s2 = new Polygon(verts);
-    Fixture *f2 = new Fixture(s2);
-    Body* b2 = world.createBody(f2, Vec2d(580, 360));
-    b2->setOmega(3);
-    b2->rotate(0);
-    b2->setMass(25);
-    b2->setVel(Vec2d(100, 50));
-    b2->setType(BODY_DYNAMIC);
+    Polygon *squarePoly = new Polygon(squareVerts);
+    Fixture *squareFix = new Fixture(squarePoly);
+    Body* square = world.createBody(squareFix, Vec2d(580, 360));
+    square->setOmega(3);
+    square->rotate(0);
+    square->setMass(25);
+    square->setVel(Vec2d(100, 50));
+    square->setType(BODY_DYNAMIC);
     
-    Circle *circle = new Circle(30);
-    Fixture *fix = new Fixture(circle);
-    Body *circleBody = world.createBody(fix, Vec2d(400, 360));
-    circleBody->rotate(1);
-    circleBody->setMass(25); 
-    circleBody->setVel(Vec2d(-100, -150));
-    circleBody->setType(BODY_DYNAMIC);
+    Circle *circleShape = new Circle(30);
+    Fixture *circleFix = new Fixture(circleShape);
+    Body *circle = world.createBody(circleFix, Vec2d(400, 360));
+    circle->rotate(1);
+    circle->setMass(25); 
+    circle->setVel(Vec2d(-100, -150));
+    circle->setType(BODY_DYNAMIC);
 
-    Spring* spring = world.createSpring(b2, circleBody, 200);
+    Spring* spring = world.createSpring(square, circle, 200);
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
@@ -111,7 +113,7 @@ int main() {
         
         if(renderer.getFrameCount() % 60 == 0) {
             std::stringstream ss;
-            ss << "Homarus Test - Total KE: " << world.getTotalKE();
+            ss << "Homarus Test - Total Energy: " << world.getTotalEnergy();
             renderer.setTitle(ss.str().c_str());
 
             std::cout << "Average render time per frame (s): " << totalRenderTime/60 << std::endl;

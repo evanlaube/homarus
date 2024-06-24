@@ -55,6 +55,12 @@ int Renderer::init() {
     return 1;
 }
 
+void Renderer::setScale(int scale) {
+    if(scale > 0) {
+        this->scale = scale;
+    }
+}
+
 void Renderer::update() {
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -66,6 +72,7 @@ void Renderer::draw() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     drawBodies();
+    drawJoints();
     
     // Display FPS at end of draw loop
     const short fpsUpdateRate = 120;
@@ -151,6 +158,27 @@ void Renderer::drawBodies() {
     }
 }
 
+void Renderer::drawJoints() {
+    Joint* j = world->jointLink;
+    while(j != nullptr) {
+        drawJoint(j);
+        j = j->getNext();
+    }
+
+}
+
+void Renderer::drawJoint(Joint* j) {
+    Vec2d start = j->getAnchor()->getPos();
+    Vec2d end = j->getAttached()->getPos();
+
+    glColor3f(0.8, 0.8, 0.8);
+
+    glBegin(GL_LINES);
+    glVertex2f(start.x, start.y);
+    glVertex2f(end.x, end.y);
+    glEnd();
+}
+
 void Renderer::saveImage(const char* path) {
 }
 
@@ -177,7 +205,6 @@ void Renderer::drawBody(Body *b) {
 }
 
 void Renderer::displayFps() {
-
     std::stringstream ss;
     ss << "Homarus Test - FPS: " << fps;
     glfwSetWindowTitle(window, ss.str().c_str());

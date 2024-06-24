@@ -32,6 +32,9 @@ class Joint {
          * Gets the previous joint in the liked list of joints.
          */
         Joint* getLast() { return last; }
+
+        Body* getAnchor() { return a; }
+        Body* getAttached() { return b; }
     protected:
         /** The first body the joint is connected to */
         Body* a;

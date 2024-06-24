@@ -26,6 +26,15 @@ class Renderer {
         void draw();
         void update();
         void exit();
+
+        /**
+         * Sets the scale of the renderer in pixel per world meter (unit of length)
+         * Note that when creating bodies and choosing their location, these values are specified in world
+         * units.
+         *
+         * @param scale scale in pixels per meter.
+         */
+        void setScale(int scale);
         
         void setTitle(const char* title);
         void displayFps();
@@ -45,8 +54,12 @@ class Renderer {
        
         void drawBodies();
         void drawBody(Body *b);
+
+        void drawJoints();
+        void drawJoint(Joint* j);
     private:
         int fps = 0;
+        int scale = 1;
         double prevTime = 0;
         uint32_t frameCount = 0;
 

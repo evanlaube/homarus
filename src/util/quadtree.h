@@ -65,6 +65,13 @@ struct Node {
 
     private:
         void set(int x, int y, int w, int h, int level) {
+            for(Node* c : children) {
+                pool.push(c);
+            }
+
+            children.clear();
+            bodies.clear();
+
             this->x = x;
             this->y = y;
             this->w = w;

@@ -39,61 +39,61 @@ int main() {
     srand(time(NULL));
         
     World world;
-    world.setGravity(0, 100);
+    world.setGravity(0, -9.8);
     
     Renderer renderer = Renderer(&world);
-    // Set renderer to have 32 pixels per world meter
-    renderer.setScale(1);
-
+    // Set renderer to have 36 pixels per world meter
+    // 1080x720 (px) -> 30 x 20 (meters)
+    renderer.setScale(36);
     renderer.init();
 
     std::vector<Vec2d> floorVerts;
     floorVerts.push_back(Vec2d(0, 0));
-    floorVerts.push_back(Vec2d(1080, 0));
-    floorVerts.push_back(Vec2d(1080, 100));
-    floorVerts.push_back(Vec2d(0, 100));
+    floorVerts.push_back(Vec2d(0, 0.5));
+    floorVerts.push_back(Vec2d(30, 0.5));
+    floorVerts.push_back(Vec2d(30, 0));
     Polygon topFloorShape(floorVerts);
     Fixture* topFloorFixture = new Fixture(&topFloorShape);
-    Body* s = world.createBody(topFloorFixture, Vec2d(540, -40));
+    Body* s = world.createBody(topFloorFixture, Vec2d(15, 0.25));
     s->setType(BODY_STATIC);
     Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
-    Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
+    Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(15, 19.75));
     bottomFloor->setType(BODY_STATIC);
 
     std::vector<Vec2d> wallVerts;
-    wallVerts.push_back(Vec2d(0, 10));
-    wallVerts.push_back(Vec2d(100, 10));
-    wallVerts.push_back(Vec2d(100, 710));
-    wallVerts.push_back(Vec2d(0, 710));
+    wallVerts.push_back(Vec2d(0, 0));
+    wallVerts.push_back(Vec2d(0.5, 0));
+    wallVerts.push_back(Vec2d(0.5, 19));
+    wallVerts.push_back(Vec2d(0, 19));
     Polygon wallShape(wallVerts);
     Fixture* leftWallFixture = new Fixture(&wallShape);
-    Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
+    Body* leftWall = world.createBody(leftWallFixture, Vec2d(0.25, 10));
     leftWall->setType(BODY_STATIC);
     Fixture* rightWallFixture = new Fixture(&wallShape);
-    Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
+    Body* rightWall = world.createBody(rightWallFixture, Vec2d(29.75, 10));
     rightWall->setType(BODY_STATIC);
 
     std::vector<Vec2d> squareVerts;
     squareVerts.push_back(Vec2d(0, 0));
-    squareVerts.push_back(Vec2d(100, 0));
-    squareVerts.push_back(Vec2d(100, 100));
-    squareVerts.push_back(Vec2d(0, 100));
+    squareVerts.push_back(Vec2d(3, 0));
+    squareVerts.push_back(Vec2d(3, 3));
+    squareVerts.push_back(Vec2d(0, 3));
 
     Polygon *squarePoly = new Polygon(squareVerts);
     Fixture *squareFix = new Fixture(squarePoly);
-    Body* square = world.createBody(squareFix, Vec2d(580, 360));
+    Body* square = world.createBody(squareFix, Vec2d(10, 10));
     square->setOmega(3);
     square->rotate(0);
     square->setMass(25);
-    square->setVel(Vec2d(100, 50));
+    //square->setVel(Vec2d(100, 50));
     square->setType(BODY_DYNAMIC);
     
-    Circle *circleShape = new Circle(30);
+    Circle *circleShape = new Circle(1);
     Fixture *circleFix = new Fixture(circleShape);
-    Body *circle = world.createBody(circleFix, Vec2d(400, 360));
+    Body *circle = world.createBody(circleFix, Vec2d(20, 10));
     circle->rotate(1);
     circle->setMass(25); 
-    circle->setVel(Vec2d(-100, -150));
+    //circle->setVel(Vec2d(-100, -150));
     circle->setType(BODY_DYNAMIC);
 
     Spring* spring = world.createSpring(square, circle, 200);

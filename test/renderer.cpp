@@ -48,7 +48,7 @@ int Renderer::init() {
     }
 
     glMatrixMode(GL_PROJECTION);
-    glOrtho(0, width, height, 0, -1, 1);
+    glOrtho(0, width, 0, height, -1, 1);
    
     glClearColor(0.08627450980392157, 0.08627450980392157, 0.11372549019607843, 1);
 
@@ -92,13 +92,13 @@ void Renderer::drawCircle(float x, float y, float r) {
 void Renderer::drawCircle(float x, float y, float r, int triCount) {
     glBegin(GL_TRIANGLE_FAN);
 
-    glVertex2f(x, y);
+    glVertex2f(x * scale, y * scale);
 
     for(int i = 0; i <= triCount; i++) {
         float cx = r * cosf(i * (M_PI*2) / triCount);
         float cy = r * sinf(i * (M_PI*2) / triCount);
 
-        glVertex2f(x+cx, y+cy);
+        glVertex2f((x+cx) * scale, (y+cy) * scale);
     }
 
     glEnd();
@@ -130,7 +130,7 @@ void Renderer::drawShape(Polygon *p, float x, float y, float a) {
     std::vector<Vec2d> verts = p->getVertices();
     for(int i = 0; i < verts.size(); i++) {
         Vec2d vert = verts[i];
-        glVertex2f(x - cx + vert.x, y - cy + vert.y);
+        glVertex2f((x - cx + vert.x) * scale, (y - cy + vert.y) * scale);
     }
 
     glEnd();
@@ -174,8 +174,8 @@ void Renderer::drawJoint(Joint* j) {
     glColor3f(0.8, 0.8, 0.8);
 
     glBegin(GL_LINES);
-    glVertex2f(start.x, start.y);
-    glVertex2f(end.x, end.y);
+    glVertex2f(start.x * scale, start.y * scale);
+    glVertex2f(end.x * scale, end.y * scale);
     glEnd();
 }
 

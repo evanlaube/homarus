@@ -16,7 +16,7 @@
 // For now initialize width and height values
 // TODO: Make grid partitioner assume best size for the grid
 // For now just use 200 subdivisions?
-World::World() : partitioner(200, 200, 1080, 720) {
+World::World() : partitioner(200, 200, 1080/36, 720/36) {
     gravity = Vec2d(0,0);
 }
 

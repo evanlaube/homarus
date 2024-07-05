@@ -177,7 +177,23 @@ double World::getTotalKE() const {
 }
 
 double World::getTotalEnergy() const {
-    double kineticEnergy = getTotalKE();
+    double kineticEnergy = 0;
+    double potentialEnergy = 0;
+
+    Body* b = bodyLink;
+    while(b != nullptr) {
+        if(b->getMass() == INFINITY) {
+            b = b->next;
+            continue;
+        }
+
+        double velMagSquared = b->getVel().magSquared();
+        kineticEnergy += (0.5) * b->mass * velMagSquared;
+
+        // TODO: Calculate potential energy from gravity
+        
+        b = b->getNext();
+    }
 
     double jointEnergy = 0;
     Joint* j = jointLink;
@@ -186,5 +202,5 @@ double World::getTotalEnergy() const {
         j = j->getNext();
     }
 
-    return kineticEnergy + jointEnergy;
+    return potentialEnergy + kineticEnergy + jointEnergy;
 }

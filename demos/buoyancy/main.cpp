@@ -33,62 +33,57 @@ int main() {
     srand(time(NULL));
         
     World world;
-    world.setGravity(0, 100);
+    world.setGravity(0, -1);
     
     Renderer renderer = Renderer(&world);
-
+    renderer.setScale(36);
     renderer.init();
 
-    Circle *circle = new Circle(50);
+    Circle *circle = new Circle(2.5);
     Fixture *fix = new Fixture(circle);
-    Body *circleBody = world.createBody(fix, Vec2d(540, 260));
-    circleBody->setMass(50*50*M_PI/2.5); 
+    Body *circleBody = world.createBody(fix, Vec2d(15, 10));
+    circleBody->setMass(2.5); 
     circleBody->setType(BODY_DYNAMIC);
 
     for(int i = 0; i < 3000; i++) {
-        float r = 3.5;
+        float r = 0.1;
 
-        float x = 20 + r + ((float)rand()/RAND_MAX) * (1080-r-r-40);
-        float y = 20 + r + ((float)rand()/RAND_MAX) * (720-r-40);
+        float x = 3 + r + ((float)rand()/RAND_MAX) * (30-r-r-6);
+        float y = 3 + r + ((float)rand()/RAND_MAX) * (20-r-6);
 
         Circle c(r);
         Fixture* f = new Fixture(&c);
         Body* b1 = world.createBody(f, Vec2d(x,y));
-        b1->setVel(Vec2d((200 - ((float)rand()/RAND_MAX) * 400)*1, (200 - ((float)rand()/RAND_MAX) * 400)*1));
-        b1->setMass(r*r*3.14*2); 
+        b1->setVel(Vec2d((2 - ((float)rand()/RAND_MAX) * 4), (2 - ((float)rand()/RAND_MAX) * 4)));
+        b1->setMass(r*r*3.14); 
         b1->setType(BODY_DYNAMIC);
     }
 
     std::vector<Vec2d> floorVerts;
     floorVerts.push_back(Vec2d(0, 0));
-    floorVerts.push_back(Vec2d(1080, 0));
-    floorVerts.push_back(Vec2d(1080, 100));
-    floorVerts.push_back(Vec2d(0, 100));
-
+    floorVerts.push_back(Vec2d(0, 0.5));
+    floorVerts.push_back(Vec2d(30, 0.5));
+    floorVerts.push_back(Vec2d(30, 0));
     Polygon topFloorShape(floorVerts);
     Fixture* topFloorFixture = new Fixture(&topFloorShape);
-    Body* s = world.createBody(topFloorFixture, Vec2d(540, -40));
+    Body* s = world.createBody(topFloorFixture, Vec2d(15, 0.25));
     s->setType(BODY_STATIC);
-
     Fixture* bottomFloorFixture = new Fixture(&topFloorShape);
-    Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
+    Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(15, 19.75));
     bottomFloor->setType(BODY_STATIC);
 
     std::vector<Vec2d> wallVerts;
-    wallVerts.push_back(Vec2d(0, 10));
-    wallVerts.push_back(Vec2d(100, 10));
-    wallVerts.push_back(Vec2d(100, 710));
-    wallVerts.push_back(Vec2d(0, 710));
-
+    wallVerts.push_back(Vec2d(0, 0));
+    wallVerts.push_back(Vec2d(0.5, 0));
+    wallVerts.push_back(Vec2d(0.5, 19));
+    wallVerts.push_back(Vec2d(0, 19));
     Polygon wallShape(wallVerts);
     Fixture* leftWallFixture = new Fixture(&wallShape);
-    Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
+    Body* leftWall = world.createBody(leftWallFixture, Vec2d(0.25, 10));
     leftWall->setType(BODY_STATIC);
-
     Fixture* rightWallFixture = new Fixture(&wallShape);
-    Body* rightWall = world.createBody(rightWallFixture, Vec2d(1080+40, 360));
+    Body* rightWall = world.createBody(rightWallFixture, Vec2d(29.75, 10));
     rightWall->setType(BODY_STATIC);
-
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
@@ -119,7 +114,7 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.update(elapsed, 2);
+        world.update(0.01, 2);
 
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 

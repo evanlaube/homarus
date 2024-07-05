@@ -3,6 +3,7 @@
 #define QUADTREE_H
 
 // Set node max really high to fully divide for now
+#include <ostream>
 #include <queue>
 #include <unordered_set>
 #define MAX_NODE_LEVEL 9999
@@ -15,25 +16,32 @@ struct Node {
     public:
         static std::queue<Node*> pool;
 
-        int x;
-        int y;
-        int w;
-        int h;
-
-        int level;
+        float x;
+        float y;
+        float w;
+        float h;
 
         std::vector<Node*> children;
         std::vector<Body*> bodies;
 
+        Node() {
+            Node(0,0,0,0);
+        }
+
         Node(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {
-            std::cout << this->x << std::endl;
         }
 
         void add(Body* body) {
-            if(bodies.size() < 4 || level == MAX_NODE_LEVEL) {
+            if(bodies.size() < 4) {
                 bodies.push_back(body);
             } else {
                 if(children.size() == 0) {
+                    if(pool.empty()) {
+                        for(int i = 0; i < 4; i++) {
+                            pool.push(new Node());
+                        }
+                    }
+
                     Node* nw = pool.front();
                     pool.pop();
                     Node* ne = pool.front();
@@ -43,13 +51,13 @@ struct Node {
                     Node* se = pool.front();
                     pool.pop();
 
-                    nw->set(x, y, w/2, h/2, level+1);
+                    nw->set(x, y, w/2, h/2);
                     children.push_back(nw);
-                    ne->set(x+w/2, y, w/2, h/2, level+1);
+                    ne->set(x+w/2, y, w/2, h/2);
                     children.push_back(ne);
-                    sw->set(x, y + w/2, w/2, h/2, level+1);
+                    sw->set(x, y + h/2, w/2, h/2);
                     children.push_back(sw);
-                    se->set(x+w/2, y + w/2, w/2, h/2, level+1);
+                    se->set(x+w/2, y + h/2, w/2, h/2);
                     children.push_back(se);
 
                     for(Body* b : bodies) {
@@ -61,10 +69,16 @@ struct Node {
                     }
                 }
             }
+
+            for(Node* n : children) {
+                if(n->contains(body)) {
+                    n->add(body);
+                } 
+            }
         }
 
     private:
-        void set(int x, int y, int w, int h, int level) {
+        void set(int x, int y, int w, int h) {
             for(Node* c : children) {
                 pool.push(c);
             }
@@ -76,7 +90,6 @@ struct Node {
             this->y = y;
             this->w = w;
             this->h = h;
-            this->level = level;
         }
 
         bool contains(Body*b) {
@@ -97,9 +110,12 @@ class Quadtree {
     public:
         Quadtree();
 
-        void construct(Body* bodyLink);
+        void update(Body* bodyLink);
         std::unordered_set<Body*> getNeighbors(Body*);
+
+        Node* getRoot() { return &root; }
     private:
+        Node root;
 
 };
 

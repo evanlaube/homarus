@@ -14,6 +14,7 @@
 #include "shapes/shape.h"
 #include "shapes/circle.h"
 #include "shapes/polygon.h"
+#include "util/quadtree.h"
 #include "util/vec2.h"
 
 #include <GL/glew.h>
@@ -52,6 +53,13 @@ int main() {
     floorVerts.push_back(Vec2d(1080, 0));
     floorVerts.push_back(Vec2d(1080, 100));
     floorVerts.push_back(Vec2d(0, 100));
+
+    std::vector<Vec2d> wallVerts;
+    wallVerts.push_back(Vec2d(0, 10));
+    wallVerts.push_back(Vec2d(100, 10));
+    wallVerts.push_back(Vec2d(100, 710));
+    wallVerts.push_back(Vec2d(0, 710));
+
     Polygon topFloorShape(floorVerts);
     Fixture* topFloorFixture = new Fixture(&topFloorShape);
     Body* s = world.createBody(topFloorFixture, Vec2d(540, -40));
@@ -60,11 +68,6 @@ int main() {
     Body* bottomFloor = world.createBody(bottomFloorFixture, Vec2d(540, 720+40));
     bottomFloor->setType(BODY_STATIC);
 
-    std::vector<Vec2d> wallVerts;
-    wallVerts.push_back(Vec2d(0, 10));
-    wallVerts.push_back(Vec2d(100, 10));
-    wallVerts.push_back(Vec2d(100, 710));
-    wallVerts.push_back(Vec2d(0, 710));
     Polygon wallShape(wallVerts);
     Fixture* leftWallFixture = new Fixture(&wallShape);
     Body* leftWall = world.createBody(leftWallFixture, Vec2d(-40, 360));
@@ -97,12 +100,29 @@ int main() {
     circle->setType(BODY_DYNAMIC);
 
     Spring* spring = world.createSpring(square, circle, 200);
+    
+
+    for(int i = 0; i < 1000; i++) {
+        Circle *c = new Circle(3);
+        Fixture *fix = new Fixture(c);
+
+        float x = 40 + (float)rand()/RAND_MAX * 1000;
+        float y = 40 + (float)rand()/RAND_MAX * 640;
+        Vec2d pos = Vec2d(x, y);
+
+        Body* circ = world.createBody(fix, pos);
+        circ->setMass(1);
+        circ->setType(BODY_DYNAMIC);
+    }
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
 
     double totalUpdateTime = 0;
     double totalRenderTime = 0;
+
+    Quadtree tree;
+    tree.update(world.bodyLink);
 
 #ifdef GIF_EXPORT
     GifWriter gifWriter;
@@ -129,10 +149,16 @@ int main() {
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
         world.update(elapsed, 2);
 
+        double tt = getTime() / (double)1000.0;
+        tree.update(world.bodyLink);
+        double treeTime = (double)getTime() / (double)1000.0 - tt;
+        std::cout << "Treetime: " << treeTime << std::endl;
+
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
         t = getTime() / (double)1000.0;
         renderer.draw();
+        renderer.drawQuadtree(&tree);
         renderer.update();
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 

@@ -7,6 +7,7 @@
 #include "shapes/circle.h"
 #include "shapes/polygon.h"
 #include "shapes/shape.h"
+#include "util/quadtree.h"
 #include <GLFW/glfw3.h>
 #include <cstdint>
 
@@ -57,6 +58,9 @@ class Renderer {
 
         void drawJoints();
         void drawJoint(Joint* j);
+
+        void drawQuadtree(Quadtree* tree);
+        void drawQuadtreeNode(Node* node);
     private:
         int fps = 0;
         int scale = 1;

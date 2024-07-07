@@ -32,14 +32,7 @@ struct Node {
 
         bool contains(Body*b) {
             std::pair<Vec2d, Vec2d> box = b->getBoundingBox();
-
-            if( (box.first.x > x && box.first.x <= x + w) || (box.second.x > x && box.second.x <= x+w) ) {
-                if((box.first.y > y && box.first.y <= y + h) || (box.second.y > y && box.second.y <= y+h)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return intersects(box);
         }
 
         void add(Body* body) {
@@ -58,7 +51,6 @@ struct Node {
                     }
                     bodies.clear();
                 }
-
             } else {
                 for(Node* n : children) {
                     if(n->contains(body)) {
@@ -69,10 +61,30 @@ struct Node {
             }
         }
 
-    private:
-        void set(int x, int y, int w, int h) {
+        void getBodiesInRegion(std::unordered_set<Body*> result, std::pair<Vec2d, Vec2d> region) {
+            if(!isLeaf) {
+                for(Node* n : children) {
+                    if(n->intersects(region)) {
+                        n->getBodiesInRegion(result, region);
+                    }
+                }
+            } else {
+                for(Body* b : bodies) {
+                    result.insert(b);
+                }
+            }
         }
 
+        bool intersects(std::pair<Vec2d, Vec2d> box) {
+            if( (box.first.x > x && box.first.x <= x + w) || (box.second.x > x && box.second.x <= x+w) ) {
+                if((box.first.y > y && box.first.y <= y + h) || (box.second.y > y && box.second.y <= y+h)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    private:
         void subdivide() {
             float halfw = w / 2.0;
             float halfh = h / 2.0;

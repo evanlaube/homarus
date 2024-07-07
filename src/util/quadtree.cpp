@@ -3,6 +3,7 @@
 #include <climits>
 #include <iostream>
 #include <queue>
+#include <unordered_set>
 
 
 void Quadtree::update(Body* bodylink) {
@@ -14,6 +15,7 @@ void Quadtree::update(Body* bodylink) {
     double maxx = INT_MIN;
     double maxy = INT_MIN;
 
+    // TODO: Find some way to get rid of this loop through all bodies
     while(body != nullptr) {
         std::pair<Vec2d, Vec2d> box = body->getBoundingBox();
         if(box.first.x < minx) {
@@ -39,4 +41,11 @@ void Quadtree::update(Body* bodylink) {
         root.add(body);
         body = body->getNext();
     }
+}
+
+std::unordered_set<Body*> Quadtree::getNeighbors(Body* body) {
+    std::unordered_set<Body*> result;
+    std::pair<Vec2d, Vec2d> box = body->getBoundingBox();
+    root.getBodiesInRegion(result, box);
+    return result;
 }

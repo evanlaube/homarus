@@ -4,10 +4,6 @@
 #include <iostream>
 #include <queue>
 
-std::queue<Node*> Node::pool = std::queue<Node*>(); 
-
-Quadtree::Quadtree() {
-}
 
 void Quadtree::update(Body* bodylink) {
 
@@ -36,7 +32,7 @@ void Quadtree::update(Body* bodylink) {
         body = body->getNext();
     }
 
-    root = Node(minx, miny, maxx - minx, maxy - miny);
+    root = Node(minx, miny, maxx - minx, maxy - miny, 0);
     body = bodylink;
 
     while(body != nullptr) {

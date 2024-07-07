@@ -2,94 +2,32 @@
 #ifndef QUADTREE_H
 #define QUADTREE_H
 
-// Set node max really high to fully divide for now
+#include <cmath>
 #include <ostream>
 #include <queue>
 #include <unordered_set>
-#define MAX_NODE_LEVEL 9999
-
 #include <iostream>
 #include <vector>
 #include "../physics/body.h"
 
+#define MAX_NODE_DEPTH 12 
+#define MAX_NODE_BODIES 4
+
 struct Node {
     public:
-        static std::queue<Node*> pool;
-
         float x;
         float y;
         float w;
         float h;
+        bool isLeaf;
+        int depth;
 
-        std::vector<Node*> children;
         std::vector<Body*> bodies;
+        Node* children[4];
 
-        Node() {
-            Node(0,0,0,0);
-        }
-
-        Node(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {
-        }
-
-        void add(Body* body) {
-            if(bodies.size() < 4) {
-                bodies.push_back(body);
-            } else {
-                if(children.size() == 0) {
-                    if(pool.empty()) {
-                        for(int i = 0; i < 4; i++) {
-                            pool.push(new Node());
-                        }
-                    }
-
-                    Node* nw = pool.front();
-                    pool.pop();
-                    Node* ne = pool.front();
-                    pool.pop();
-                    Node* sw = pool.front();
-                    pool.pop();
-                    Node* se = pool.front();
-                    pool.pop();
-
-                    nw->set(x, y, w/2, h/2);
-                    children.push_back(nw);
-                    ne->set(x+w/2, y, w/2, h/2);
-                    children.push_back(ne);
-                    sw->set(x, y + h/2, w/2, h/2);
-                    children.push_back(sw);
-                    se->set(x+w/2, y + h/2, w/2, h/2);
-                    children.push_back(se);
-
-                    for(Body* b : bodies) {
-                        for(Node* node : children) {
-                            if(node->contains(b)) {
-                                node->add(b);
-                            }
-                        }
-                    }
-                }
-            }
-
-            for(Node* n : children) {
-                if(n->contains(body)) {
-                    n->add(body);
-                } 
-            }
-        }
-
-    private:
-        void set(int x, int y, int w, int h) {
-            for(Node* c : children) {
-                pool.push(c);
-            }
-
-            children.clear();
-            bodies.clear();
-
-            this->x = x;
-            this->y = y;
-            this->w = w;
-            this->h = h;
+        Node(float x, float y, float w, float h, int depth) 
+            : x(x), y(y), w(w), h(h), isLeaf(true), depth(depth) {
+            std::fill(std::begin(children), std::end(children), nullptr);
         }
 
         bool contains(Body*b) {
@@ -103,12 +41,56 @@ struct Node {
 
             return false;
         }
+
+        void add(Body* body) {
+            if(isLeaf) {
+                bodies.push_back(body);
+
+                if(bodies.size() > MAX_NODE_BODIES && depth < MAX_NODE_DEPTH) {
+                    subdivide();
+                    for(Body* b : bodies) {
+                        for(Node* n : children) {
+                            if(n->contains(b)) {
+                                n->add(b);
+                                break;
+                            }
+                        }
+                    }
+                    bodies.clear();
+                }
+
+            } else {
+                for(Node* n : children) {
+                    if(n->contains(body)) {
+                        n->add(body);
+                        break;
+                    }
+                }
+            }
+        }
+
+    private:
+        void set(int x, int y, int w, int h) {
+        }
+
+        void subdivide() {
+            float halfw = w / 2.0;
+            float halfh = h / 2.0;
+
+            children[0] = new Node(x, y, halfw, halfh, depth+1);
+            children[1] = new Node(x, y + halfh, halfw, halfh, depth+1);
+            children[2] = new Node(x + halfw, y, halfw, halfh, depth+1);
+            children[3] = new Node(x + halfw, y + halfh, halfw, halfh, depth+1);
+            isLeaf = false;
+        }
+
         
 };
 
 class Quadtree {
     public:
-        Quadtree();
+        Quadtree(float x, float y, float w, float h)
+            : root(x, y, w, h, 0) {};
 
         void update(Body* bodyLink);
         std::unordered_set<Body*> getNeighbors(Body*);

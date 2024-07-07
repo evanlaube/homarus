@@ -220,7 +220,7 @@ void Renderer::drawQuadtree(Quadtree* tree) {
 }
 
 void Renderer::drawQuadtreeNode(Node* node) {
-    if(node->children.empty()) {
+    if(node->isLeaf) {
         glColor3f(1,1,1);
         glBegin(GL_LINE_LOOP);
         glVertex2f(node->x, node->y);

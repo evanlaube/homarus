@@ -39,6 +39,8 @@ class Body {
         Shape* getShape() const { return fixture.getShape(); }
         short getType() const { return type; }
 
+        std::pair<Vec2d, Vec2d> getBoundingBox() { return getShape()->getBoundingBox(); }
+
         /**
          * Sets the type of the body to either static or dynamic.
          * @param type Type to set body to. Use BODY_DYNAMIC or BODY_STATIC

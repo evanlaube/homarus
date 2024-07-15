@@ -214,3 +214,23 @@ void Renderer::displayFps() {
 void Renderer::setTitle(const char* title) {
     glfwSetWindowTitle(window, title);
 }
+
+void Renderer::drawQuadtree(Quadtree* tree) {
+    drawQuadtreeNode(tree->getRoot());
+}
+
+void Renderer::drawQuadtreeNode(Node* node) {
+    if(node->isLeaf) {
+        glColor3f(1,1,1);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(node->x, node->y);
+        glVertex2f(node->x+node->w, node->y);
+        glVertex2f(node->x+node->w, node->y + node->h);
+        glVertex2f(node->x, node->y + node->h);
+        glEnd();
+    } else {
+        for(Node* child : node->children) {
+            drawQuadtreeNode(child);
+        }
+    }
+}

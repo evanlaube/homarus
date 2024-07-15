@@ -14,6 +14,7 @@
 #include "shapes/shape.h"
 #include "shapes/circle.h"
 #include "shapes/polygon.h"
+#include "util/quadtree.h"
 #include "util/vec2.h"
 
 #include <GL/glew.h>
@@ -79,30 +80,48 @@ int main() {
     squareVerts.push_back(Vec2d(3, 3));
     squareVerts.push_back(Vec2d(0, 3));
 
-    Polygon *squarePoly = new Polygon(squareVerts);
-    Fixture *squareFix = new Fixture(squarePoly);
-    Body* square = world.createBody(squareFix, Vec2d(10, 10));
-    square->setOmega(3);
-    square->rotate(0);
-    square->setMass(25);
+    //Polygon *squarePoly = new Polygon(squareVerts);
+    //Fixture *squareFix = new Fixture(squarePoly);
+    //Body* square = world.createBody(squareFix, Vec2d(580, 360));
+    //square->setOmega(3);
+    //square->rotate(0);
+    //square->setMass(25);
     //square->setVel(Vec2d(100, 50));
-    square->setType(BODY_DYNAMIC);
-    
-    Circle *circleShape = new Circle(1);
-    Fixture *circleFix = new Fixture(circleShape);
-    Body *circle = world.createBody(circleFix, Vec2d(20, 10));
-    circle->rotate(1);
-    circle->setMass(25); 
+    //square->setType(BODY_DYNAMIC);
+    //
+    //Circle *circleShape = new Circle(30);
+    //Fixture *circleFix = new Fixture(circleShape);
+    //Body *circle = world.createBody(circleFix, Vec2d(400, 360));
+    //circle->rotate(1);
+    //circle->setMass(25); 
     //circle->setVel(Vec2d(-100, -150));
-    circle->setType(BODY_DYNAMIC);
 
-    Spring* spring = world.createSpring(square, circle, 200);
+    //Spring* spring = world.createSpring(square, circle, 200);
+    
+
+    for(int i = 0; i < 3000; i++) {
+        Circle *c = new Circle(3);
+        Fixture *fix = new Fixture(c);
+
+        float x = 40 + (float)rand()/RAND_MAX * 1000;
+        float y = 40 + (float)rand()/RAND_MAX * 640;
+        Vec2d pos = Vec2d(x, y);
+        Vec2d vel = Vec2d(x/10-50, y/10-32);
+
+        Body* circ = world.createBody(fix, pos);
+        circ->setMass(1);
+        circ->setType(BODY_DYNAMIC);
+        circ->setVel(vel);
+    }
 
     uint64_t currentTime = getTime();
     uint64_t lastTime = getTime(); 
 
     double totalUpdateTime = 0;
     double totalRenderTime = 0;
+
+    Quadtree tree(0, 0, 0, 0);
+    tree.update(world.bodyLink);
 
 #ifdef GIF_EXPORT
     GifWriter gifWriter;
@@ -127,12 +146,18 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
+        //world.update(elapsed, 6);
         world.update(elapsed, 2);
-
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
+
+        double tt = getTime() / (double)1000.0;
+        tree.update(world.bodyLink);
+        double treeTime = (double)getTime() / (double)1000.0 - tt;
+        std::cout << "Treetime: " << treeTime << std::endl;
 
         t = getTime() / (double)1000.0;
         renderer.draw();
+        renderer.drawQuadtree(&tree);
         renderer.update();
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 

@@ -40,7 +40,7 @@ int main() {
     srand(time(NULL));
         
     World world;
-    world.setGravity(0, -9.8);
+    world.setGravity(0, -5);
     
     Renderer renderer = Renderer(&world);
     // Set renderer to have 36 pixels per world meter
@@ -100,13 +100,13 @@ int main() {
     
 
     for(int i = 0; i < 3000; i++) {
-        Circle *c = new Circle(3);
+        Circle *c = new Circle(0.1);
         Fixture *fix = new Fixture(c);
 
-        float x = 40 + (float)rand()/RAND_MAX * 1000;
-        float y = 40 + (float)rand()/RAND_MAX * 640;
+        float x = 2 + (float)rand()/RAND_MAX * 26;
+        float y = 2 + (float)rand()/RAND_MAX * 16;
         Vec2d pos = Vec2d(x, y);
-        Vec2d vel = Vec2d(x/10-50, y/10-32);
+        Vec2d vel = Vec2d(x/30 - 0.5, y/20 - 0.5);
 
         Body* circ = world.createBody(fix, pos);
         circ->setMass(1);
@@ -120,8 +120,8 @@ int main() {
     double totalUpdateTime = 0;
     double totalRenderTime = 0;
 
-    Quadtree tree(0, 0, 0, 0);
-    tree.update(world.bodyLink);
+    //Quadtree tree(0, 0, 0, 0);
+    //tree.update(world.bodyLink);
 
 #ifdef GIF_EXPORT
     GifWriter gifWriter;
@@ -146,18 +146,17 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        //world.update(elapsed, 6);
-        world.update(elapsed, 2);
+        world.update(0.01, 2);
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
-        double tt = getTime() / (double)1000.0;
-        tree.update(world.bodyLink);
-        double treeTime = (double)getTime() / (double)1000.0 - tt;
-        std::cout << "Treetime: " << treeTime << std::endl;
+        //double tt = getTime() / (double)1000.0;
+        //tree.update(world.bodyLink);
+        //double treeTime = (double)getTime() / (double)1000.0 - tt;
+        //std::cout << "Treetime: " << treeTime << std::endl;
 
         t = getTime() / (double)1000.0;
         renderer.draw();
-        renderer.drawQuadtree(&tree);
+        renderer.drawQuadtree(&world.partitioner);
         renderer.update();
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 

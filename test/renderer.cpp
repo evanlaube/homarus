@@ -223,10 +223,10 @@ void Renderer::drawQuadtreeNode(Node* node) {
     if(node->isLeaf) {
         glColor3f(1,1,1);
         glBegin(GL_LINE_LOOP);
-        glVertex2f(node->x, node->y);
-        glVertex2f(node->x+node->w, node->y);
-        glVertex2f(node->x+node->w, node->y + node->h);
-        glVertex2f(node->x, node->y + node->h);
+        glVertex2f(node->x * scale, node->y * scale);
+        glVertex2f((node->x+node->w) * scale, (node->y) * scale);
+        glVertex2f((node->x+node->w) * scale, (node->y + node->h) * scale);
+        glVertex2f(node->x * scale, (node->y + node->h) * scale);
         glEnd();
     } else {
         for(Node* child : node->children) {

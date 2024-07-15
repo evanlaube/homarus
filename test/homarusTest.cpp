@@ -109,7 +109,7 @@ int main() {
         float x = 40 + (float)rand()/RAND_MAX * 1000;
         float y = 40 + (float)rand()/RAND_MAX * 640;
         Vec2d pos = Vec2d(x, y);
-        Vec2d vel = Vec2d(x-500, y-320);
+        Vec2d vel = Vec2d(x/10-50, y/10-32);
 
         Body* circ = world.createBody(fix, pos);
         circ->setMass(1);
@@ -149,8 +149,8 @@ int main() {
         double t = getTime() / (double)1000.0;
         currentTime = getTime();
         double elapsed = (currentTime-lastTime)/(double)1000.0; // Convert milliseconds to seconds
-        world.update(elapsed, 6);
-        world.update(0.01, 2);
+        //world.update(elapsed, 6);
+        world.update(elapsed, 2);
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
         double tt = getTime() / (double)1000.0;

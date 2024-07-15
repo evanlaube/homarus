@@ -7,6 +7,7 @@
 #include "../util/vec2.h"
 #include "../util/gridpartitioner.h"
 #include "joints/joint.h"
+#include "../util/quadtree.h"
 
 /**
  * The World class is the container for all entities that are created. Only one world is needed
@@ -26,7 +27,7 @@ class World {
         BlockAllocator allocator;
 
         /** Partitioning system to make checking collisions more efficient */
-        GridPartitioner partitioner;
+        Quadtree partitioner;
 
         /** Pointer to first body in linked list of bodies */
         Body* bodyLink = nullptr;

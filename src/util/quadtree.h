@@ -36,6 +36,7 @@ struct Node {
         }
 
         void add(Body* body) {
+
             if(isLeaf) {
                 bodies.push_back(body);
 
@@ -61,7 +62,7 @@ struct Node {
             }
         }
 
-        void getBodiesInRegion(std::unordered_set<Body*> result, std::pair<Vec2d, Vec2d> region) {
+        void getBodiesInRegion(std::unordered_set<Body*>& result, std::pair<Vec2d, Vec2d> region) {
             if(!isLeaf) {
                 for(Node* n : children) {
                     if(n->intersects(region)) {
@@ -76,12 +77,13 @@ struct Node {
         }
 
         bool intersects(std::pair<Vec2d, Vec2d> box) {
-            if( (box.first.x > x && box.first.x <= x + w) || (box.second.x > x && box.second.x <= x+w) ) {
-                if((box.first.y > y && box.first.y <= y + h) || (box.second.y > y && box.second.y <= y+h)) {
-                    return true;
-                }
-            }
-            return false;
+            return !(box.second.x < x || box.first.x > x + w || box.second.y < y || box.first.y > y + h);
+            //if( (box.first.x > x && box.first.x <= x + w) || (box.second.x > x && box.second.x <= x+w) ) {
+            //    if((box.first.y > y && box.first.y <= y + h) || (box.second.y > y && box.second.y <= y+h)) {
+            //        return true;
+            //    }
+            //}
+            //return false;
         }
 
     private:

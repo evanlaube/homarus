@@ -78,12 +78,6 @@ struct Node {
 
         bool intersects(std::pair<Vec2d, Vec2d> box) {
             return !(box.second.x < x || box.first.x > x + w || box.second.y < y || box.first.y > y + h);
-            //if( (box.first.x > x && box.first.x <= x + w) || (box.second.x > x && box.second.x <= x+w) ) {
-            //    if((box.first.y > y && box.first.y <= y + h) || (box.second.y > y && box.second.y <= y+h)) {
-            //        return true;
-            //    }
-            //}
-            //return false;
         }
 
     private:

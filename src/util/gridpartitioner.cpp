@@ -45,6 +45,9 @@ void GridPartitioner::insertBody(Body* b) {
 
         for(int i = minX; i <= maxX; i++) {
             for(int j = minY; j <= maxY; j++) {
+                if(i < 0 || j < 0) {
+                    continue;
+                }
                 grid[i][j].insert(b);
             }
         }

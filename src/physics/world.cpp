@@ -6,6 +6,7 @@
 #include "../homarus.h"
 #include "collision.h"
 #include "../util/gridpartitioner.h"
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <unordered_set>
@@ -29,6 +30,8 @@ void World::update(double timestep, int updates) {
 void World::step(double timestep) {
     Body* b = bodyLink;
 
+    std::cout << "World::step timing:" << std::endl;
+    double t1 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
     // Move objects kinematically
     while(b != nullptr) {
         if(b->getType() != BODY_STATIC) {
@@ -47,9 +50,16 @@ void World::step(double timestep) {
         
         b = b->next;
     }
+    double t2 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
+    std::cout << "\tTime for kinematic updates: " << t2-t1 << std::endl; 
 
+    t1 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
     partitioner.update(bodyLink);
+    t2 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
+    std::cout << "\tTime for partitioner update: " << t2-t1 << std::endl;
 
+
+    t1 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
     // Resolve collisions
     b = bodyLink;
     while(b != nullptr) {
@@ -69,13 +79,18 @@ void World::step(double timestep) {
 
         b = b->getNext();
     }
+    t2 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
+    std::cout << "\tTime for resolving collisions: " << t2-t1 << std::endl;
 
+    t1 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
     // Update joints
     Joint* j = jointLink;
     while(j != nullptr) {
         j->update();
         j = j->getNext();
     }
+    t2 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.0;
+    std::cout << "\tTime for joint updates: " << t2-t1 << std::endl;
 }
 
 void World::collide(Body *a, Body *b, Collision c) {

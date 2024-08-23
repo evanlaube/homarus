@@ -91,7 +91,7 @@ int main() {
     //
     //Circle *circleShape = new Circle(30);
     //Fixture *circleFix = new Fixture(circleShape);
-    //Body *circle = world.createBody(circleFix, Vec2d(400, 360));
+    //Body *circle = world.createBody(circleFix, Vec2d(15, 10));
     //circle->rotate(1);
     //circle->setMass(25); 
     //circle->setVel(Vec2d(-100, -150));
@@ -99,8 +99,8 @@ int main() {
     //Spring* spring = world.createSpring(square, circle, 200);
     
 
-    for(int i = 0; i < 3000; i++) {
-        Circle *c = new Circle(0.1);
+    for(int i = 0; i < 2000; i++) {
+        Circle *c = new Circle(0.15);
         Fixture *fix = new Fixture(c);
 
         float x = 2 + (float)rand()/RAND_MAX * 26;
@@ -149,14 +149,9 @@ int main() {
         world.update(0.01, 2);
         totalUpdateTime += ((double)getTime() / (double)1000.0) - t;
 
-        //double tt = getTime() / (double)1000.0;
-        //tree.update(world.bodyLink);
-        //double treeTime = (double)getTime() / (double)1000.0 - tt;
-        //std::cout << "Treetime: " << treeTime << std::endl;
-
         t = getTime() / (double)1000.0;
         renderer.draw();
-        renderer.drawQuadtree(&world.partitioner);
+        renderer.drawQuadtree(world.getPartitioner());
         renderer.update();
         totalRenderTime += ((double)getTime() / (double)1000.0) - t;
 

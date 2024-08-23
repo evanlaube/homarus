@@ -26,9 +26,6 @@ class World {
         /** Memory manager to store all entities in world */
         BlockAllocator allocator;
 
-        /** Partitioning system to make checking collisions more efficient */
-        Quadtree partitioner;
-
         /** Pointer to first body in linked list of bodies */
         Body* bodyLink = nullptr;
 
@@ -101,11 +98,22 @@ class World {
          */
         double getTotalEnergy() const;
 
+        /**
+         * This function returns a pointer to the Quadtree used to spatially partition
+         * the world.
+         *
+         * @return A pointer to the quadtree for the world.
+         */
+        Quadtree* getPartitioner() { return &partitioner; }
+
         void setGravity(float x, float y) { gravity = Vec2d(x,y); }
         Vec2d getGravity() const { return gravity; }
     private:
         /** Vector storing the acceleration on all bodies due to gravity (in m/s^2) */
         Vec2d gravity;
+
+        /** Partitioning system to make checking collisions more efficient */
+        Quadtree partitioner;
 };
 
 #endif // !WORLD_H

@@ -80,7 +80,7 @@ class World {
          * @param b The second body in the collision
          * @param c The Collision object involving a and b
          */
-        void collide(Body* a, Body* b, Collision c);
+        void collide(Body& a, Body& b, Collision c);
 
         /**
          * This function calculates the total kinetic energy of all bodies contained

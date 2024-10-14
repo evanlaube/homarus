@@ -59,7 +59,7 @@ void World::step(double timestep) {
             Collision c = b->getShape()->getCollision(collider->getShape());
 
             if(c.colliding) {
-                collide(b, collider, c);
+                collide(*b, *collider, c);
             }
         }
 
@@ -73,9 +73,9 @@ void World::step(double timestep) {
     }
 }
 
-void World::collide(Body *a, Body *b, Collision c) {
+void World::collide(Body &a, Body &b, Collision c) {
     // Ignore if both bodies are static
-    if(a->getType() == BODY_STATIC && b->getType() == BODY_STATIC)
+    if(a.getType() == BODY_STATIC && b.getType() == BODY_STATIC)
         return;
 
     // Ensure that passed collision actually has overlap
@@ -89,8 +89,8 @@ void World::collide(Body *a, Body *b, Collision c) {
     Vec2d normal = c.normal;
     Vec2d intersect = c.intersection;
 
-    Vec2d aVel = a->fixture.getBody()->getVel();
-    Vec2d bVel = b->fixture.getBody()->getVel();
+    Vec2d aVel = a.fixture.getBody()->getVel();
+    Vec2d bVel = b.fixture.getBody()->getVel();
 
     // Get magnitudes of velocities of both bodies
     double aVelMag = aVel.mag();
@@ -100,29 +100,29 @@ void World::collide(Body *a, Body *b, Collision c) {
     // A small pecrentage gap is needed (1%) in order to stop objects from
     // 'sticking' together (it's an interesting bug). Therefore,
     // TODO: Change this code up to have a smaller margin of error. 
-    a->pos += overlap * 1.01 * (aVelMag /(aVelMag + bVelMag));
-    b->pos -= overlap * 1.01 * (bVelMag /(aVelMag + bVelMag));
+    a.pos += overlap * 1.01 * (aVelMag /(aVelMag + bVelMag));
+    b.pos -= overlap * 1.01 * (bVelMag /(aVelMag + bVelMag));
 
     // Perpendicular 'radius' from COM of body to point of intersect
-    Vec2d ra = intersect - a->getPos();
+    Vec2d ra = intersect - a.getPos();
     Vec2d rap = Vec2d(ra.y, -1*ra.x);
-    Vec2d rb = intersect - b->getPos();
+    Vec2d rb = intersect - b.getPos();
     Vec2d rbp = Vec2d(rb.y, -1*rb.x);
 
     // Velocity of a with respect to b
-    Vec2d vab = (aVel + rap*a->getOmega()) - (bVel + rbp*b->getOmega());
+    Vec2d vab = (aVel + rap*a.getOmega()) - (bVel + rbp*b.getOmega());
 
     // Calculate impulse of collison
     // TODO: Add in coefficinet of restitution
-    double j = ((-2 * vab).dot(normal)) / ((normal.dot(normal) * (1.0/a->getMass() + 1.0/b->getMass())) + pow(rap.dot(normal), 2)/a->getMoment() + pow(rbp.dot(normal), 2)/b->getMoment());
+    double j = ((-2 * vab).dot(normal)) / ((normal.dot(normal) * (1.0/a.getMass() + 1.0/b.getMass())) + pow(rap.dot(normal), 2)/a.getMoment() + pow(rbp.dot(normal), 2)/b.getMoment());
     
     // Update linear velocities according to calculated impulse
-    a->vel = aVel + normal * (j * (1.0/a->getMass()));
-    b->vel = bVel - normal * (j * (1.0/b->getMass()));
+    a.vel = aVel + normal * (j * (1.0/a.getMass()));
+    b.vel = bVel - normal * (j * (1.0/b.getMass()));
 
     // Update angular velocities according to impulse
-    a->omega = a->omega + (normal*j).dot(rap) / a->getMoment(); 
-    b->omega = b->omega - (rbp.dot(normal * j)) / b->getMoment(); 
+    a.omega = a.omega + (normal*j).dot(rap) / a.getMoment(); 
+    b.omega = b.omega - (rbp.dot(normal * j)) / b.getMoment(); 
 }
 
 Body* World::createBody(Fixture *f, Vec2d pos) {

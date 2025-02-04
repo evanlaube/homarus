@@ -22,7 +22,12 @@ void Spring::update() {
     displacement = dist - equilibriumLength;
 
     double forceAmount = k * displacement;
-    Vec2d force = dir * forceAmount/2;
+    Vec2d springForce = dir * forceAmount/2;
+
+    Vec2d relativeVelocity = b->getVel() - a->getVel();
+    Vec2d dampingForce = relativeVelocity * -dampingRatio;
+
+    Vec2d force = springForce + dampingForce;
 
     a->applyForce(force * -1);
     b->applyForce(force);

@@ -18,6 +18,9 @@ class Spring : public Joint {
 
         void setEquilibriumLength(double length);
         double getEquilibriumLength() const { return equilibriumLength; }
+
+        void setDampingRatio(double ratio) {dampingRatio = ratio; }
+        double getDampingRatio() const { return dampingRatio; }
     private:
         /** The spring constant for the spring (N/m) */
         double k = 20;
@@ -27,6 +30,8 @@ class Spring : public Joint {
          * This value is calculated on every update.
          */
         double displacement = 0;
+        
+        double dampingRatio = 1;
 };
 
 #endif // SPRING_H
